@@ -1,0 +1,52 @@
+# Live-build directories and artifacts
+.build/
+build/.build/
+binary/
+binary.*/
+cache/
+chroot/
+source/
+config/binary
+config/bootstrap
+config/chroot
+config/common
+config/source
+
+# Build output
+*.iso
+*.img
+*.log
+*.files
+*.contents
+*.packages
+
+# System and temporary files
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+*~
+*.swp
+*.swo
+.directory
+
+# VS Code
+.vscode/
+*.code-workspace
+
+# Keep tracking
+!auto/
+!config/package-lists/
+!config/includes.chroot/
+!config/hooks/
+!config/apt/
+!scripts/
+!README.md
+
+# Project-specific exclusions
+src_img/
+debian-conversion-script/
+rootfs/
+build/config/includes.chroot/

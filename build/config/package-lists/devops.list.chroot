@@ -1,0 +1,28 @@
+# DevOps Tools
+# Container-focused development environment with Podman
+# and minimal development tools
+
+# Container Tools
+podman
+buildah
+skopeo
+containers-common
+
+# Container Orchestration
+kubectl
+helm
+k9s
+
+# Essential Tools
+git
+jq
+yq
+
+# Editor and Extensions
+# VS Code will be installed from Microsoft's repository
+curl
+gnupg2
+software-properties-common
+code
+code-insiders
+# The container extension will be installed via VS Code's extension mechanism

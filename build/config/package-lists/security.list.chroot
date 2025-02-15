@@ -1,0 +1,68 @@
+# System Monitoring and Auditing
+# Tools for system auditing, logging, and performance monitoring
+auditd
+audispd-plugins
+sysstat
+iotop
+htop
+atop
+logwatch
+syslog-ng
+
+# Intrusion Detection and Prevention
+# Tools for detecting system changes and potential intrusions
+aide
+rkhunter
+chkrootkit
+unhide
+tiger
+tripwire
+debsums
+
+# Network Security and Analysis
+# Tools for network monitoring, analysis and security testing
+nmap
+wireshark
+tcpdump
+netsniff-ng
+net-tools
+iptraf-ng
+mtr-tiny
+iftop
+nethogs
+traceroute
+
+# System Hardening Tools
+# Tools for system hardening and security assessment
+apparmor
+apparmor-utils
+apparmor-profiles
+apparmor-profiles-extra
+lynis
+needrestart
+debsecan
+fail2ban
+policycoreutils
+openscap-scanner
+
+# Password and Encryption Tools
+# Tools for password management and file encryption
+keepassxc
+gnupg
+pwgen
+checksecurity
+cryptsetup
+yubikey-personalization
+paperkey
+secure-delete
+
+# Forensics Tools
+# Tools for system forensics and analysis
+sleuthkit
+foremost
+testdisk
+recoverjpeg
+scalpel
+dc3dd
+hashdeep
+

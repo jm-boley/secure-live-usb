@@ -1,0 +1,41 @@
+jboley:x:1000:
+sudo:x:27:jboley
+
+# Basic system groups
+root:x:0:                            # Root group for system administration
+daemon:x:1:                          # Background system processes
+bin:x:2:                            # Legacy system binaries group
+sys:x:3:                            # System database access
+tty:x:5:                            # Terminal access
+disk:x:6:                           # Raw disk device access
+shadow:x:42:                        # Shadow password file access
+
+# Service groups
+systemd-journal:x:100:              # System logging access
+systemd-network:x:101:              # Network management
+messagebus:x:102:                   # D-Bus message system
+crontab:x:103:                      # Scheduled task management
+
+# Security tool groups
+tcpdump:x:110:                      # Network packet capture capabilities
+wireshark:x:111:                    # Packet analysis capabilities
+security:x:112:                     # General security tools access
+
+# Container and virtualization groups
+podman:x:120:                       # Podman container operations (rootless by default, more secure than Docker)
+subuid:x:121:                       # Subordinate user IDs for container user namespaces
+subgid:x:122:                       # Subordinate group IDs for container user namespaces
+kvm:x:123:                          # KVM virtualization access
+libvirt:x:124:                      # Libvirt virtualization management
+
+# System access groups
+sudo:x:27:                          # Superuser access via sudo
+wheel:x:998:                        # Alternative superuser group
+
+# Hardware access groups
+audio:x:29:                         # Audio device access
+video:x:44:                         # Video device access
+input:x:105:                        # Input device access
+render:x:106:                       # 3D acceleration access
+netdev:x:107:                       # Network device management
+

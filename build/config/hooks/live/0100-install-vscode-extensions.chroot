@@ -1,0 +1,27 @@
+#!/bin/bash
+set -e
+
+# Create temporary user for initial extension download
+TMP_USER="vscode-tmp"
+useradd -m $TMP_USER
+
+# Create our skel directory structure
+mkdir -p /etc/skel/.vscode/extensions
+
+# Install extension as temporary user
+runuser -l $TMP_USER -c 'code --install-extension ms-vscode-remote.remote-containers --force'
+
+# Copy the installed extension to skel directory
+cp -r /home/$TMP_USER/.vscode/extensions/ms-vscode-remote.remote-containers* /etc/skel/.vscode/extensions/
+
+# Cleanup
+userdel -r $TMP_USER
+
+# Set proper permissions
+chown -R root:root /etc/skel/.vscode
+chmod -R 755 /etc/skel/.vscode
+
+# Create marker file to prevent VS Code from updating this extension
+touch /etc/skel/.vscode/extensions/.skip-update
+
+exit 0

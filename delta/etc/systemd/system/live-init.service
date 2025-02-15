@@ -1,0 +1,31 @@
+[Unit]
+Description=Live Environment Initialization Service
+Documentation=https://www.freedesktop.org/software/systemd/man/systemd.service.html
+DefaultDependencies=no
+Before=network.target network-online.target
+After=local-fs.target
+Conflicts=shutdown.target
+RequiresMountsFor=/etc /var
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/usr/local/sbin/live-init.sh
+
+# Security hardening
+ProtectSystem=strict
+ProtectHome=true
+PrivateTmp=true
+NoNewPrivileges=true
+ProtectKernelTunables=true
+ProtectControlGroups=true
+ProtectKernelModules=true
+RestrictAddressFamilies=AF_UNIX
+MemoryDenyWriteExecute=true
+RestrictRealtime=true
+RestrictSUIDSGID=true
+LockPersonality=true
+
+[Install]
+WantedBy=multi-user.target
+

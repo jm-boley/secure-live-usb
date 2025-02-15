@@ -1,0 +1,22 @@
+# Desktop Environment Packages
+# This list contains the LXQt desktop environment and related packages
+# needed for a functional graphical user interface
+
+# Core Desktop Environment
+lxqt
+lxqt-core
+qterminal
+pcmanfm-qt
+lxqt-sudo
+lightdm
+
+# Network Management
+network-manager-gnome
+
+# Web Browser
+firefox-esr
+
+# Audio Support
+pulseaudio
+pavucontrol-qt
+

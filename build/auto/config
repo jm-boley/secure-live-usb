@@ -1,0 +1,16 @@
+#!/bin/sh
+lb config noauto \
+    --distribution bookworm \
+    --architectures amd64 \
+    --archive-areas "main contrib non-free-firmware" \
+    --binary-images iso-hybrid \
+    --bootloader grub-efi \
+    --debian-installer none \
+    --memtest none \
+    --binary-filesystem fat32 \
+    --apt-indices false \
+    --apt-recommends false \
+    --debootstrap-options "--variant=minbase" \
+    --firmware-binary true \
+    --firmware-chroot true \
+    "${@}"
