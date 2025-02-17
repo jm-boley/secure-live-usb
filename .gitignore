@@ -1,16 +1,12 @@
 # Live-build directories and artifacts
-.build/
+build/config/
+!build/config/.gitkeep
 build/.build/
-binary/
-binary.*/
-cache/
-chroot/
-source/
-config/binary
-config/bootstrap
-config/chroot
-config/common
-config/source
+build/binary/
+build/binary.*/
+build/cache/
+build/chroot/
+build/source/
 
 # Build output
 *.iso
@@ -36,17 +32,12 @@ Thumbs.db
 .vscode/
 *.code-workspace
 
-# Keep tracking
-!auto/
-!config/package-lists/
-!config/includes.chroot/
-!config/hooks/
-!config/apt/
-!scripts/
-!README.md
-
 # Project-specific exclusions
 src_img/
 debian-conversion-script/
 rootfs/
-build/config/includes.chroot/
+
+# Keep tracking these directories (exceptions)
+!build/auto/
+!scripts/
+!README.md
