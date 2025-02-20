@@ -1,6 +1,206 @@
-# Custom Security-Focused Debian Live Build
+# Custom Security-Focused Debian Live Build (a.k.a. the DevOps Paranoiac's Live Utopia)
 
 This project contains configuration files and build scripts for creating a customized Debian-based live distribution focused on DevOps and security tools. Inspired by the comprehensive toolset found in security-focused distributions like ParrotOS, this project builds a lightweight, customized system from the ground up using Debian as its foundation.
+
+## Features
+
+### Stock DevOps Toolkit
+
+The built image "ships" with a carefully selected set of DevOps tools, prioritizing security and isolation while maintaining full functionality for development workflows. Visual Studio Code is provided for coding and debugging tasks, while Podman containers provide isolated runtimes for code development and testing environments. Containers may also host specialized applications to perform non-standard development activities, such as Postman for API testing. The git CLI is also provided in addition to VSCode's git management plugin for working with code repositories.
+
+#### Container Runtime (Podman)
+
+Modern development demands container isolation, but security shouldn't be optional. Podman provides a daemonless container engine that puts security first without sacrificing developer productivity. Running containers as your regular user account is the default, ensuring that even a compromised container can't escalate beyond your regular user permissions.
+
+- Rootless Container Operations
+    - Zero-trust container execution by default
+    - User namespace isolation
+    - No privileged daemon process
+    - Seamless integration with user services
+- Pod and Container Management
+    - Native pod support for microservices
+    - Docker-compatible CLI interface
+    - Built-in container health monitoring
+    - Automated container lifecycle management
+- System Integration
+    - Native systemd service management
+    - Socket activation support
+    - Unified logging with journald
+    - Resource cleanup on service shutdown
+- Security Controls
+    - SELinux mandatory access control
+    - Seccomp system call filtering
+    - Fine-grained capability management
+    - cgroups v2 resource constraints
+
+#### Development Environment (Visual Studio Code)
+
+Because paranoid doesn't mean you can't have nice things. VS Code provides a modern, extensible development environment that's been carefully configured to maintain security without getting in your way. Trust, but verify—and maybe add a few more verification layers just to be sure.
+
+- Security-First Extensions
+    - Container development in isolated environments
+    - Git integration with mandatory GPG signing
+    - Real-time YAML security validation
+    - Infrastructure as Code vulnerability scanning
+- Workspace Protection
+    - Isolated extension host processes
+    - Restricted execution environments
+    - Sandboxed debugging sessions
+    - Resource usage limitations
+- Remote Development
+    - Secure container-based workflows
+    - SSH remote development with key management
+    - Protected credential handling
+    - Isolated development networks
+- Terminal Integration
+    - Native shell access with environment isolation
+    - Integrated credential management
+    - Command history protection
+    - Environment variable security controls
+
+#### Version Control (Git)
+
+Because your code history deserves witness protection. Our Git configuration ensures every commit is signed, every merge is verified, and your repository history is tamper-evident.
+
+- Cryptographic Integrity
+    - GPG signing enabled by default
+    - Commit verification enforcement
+    - Tag authentication requirements
+    - Merge commit validation
+- Access Control
+    - Safe directory enforcement
+    - Protected config handling
+    - Secure credential storage
+    - Remote trust management
+- Workflow Security
+    - Protected branch policies
+    - Code review enforcement
+    - Signed tag requirements
+    - Clean/smudge filter controls
+- Collaboration Tools
+    - Secure remote operations
+    - Verified patch handling
+    - Protected reflog history
+    - Conflict resolution tracking
+
+#### Backup and Recovery Tools
+
+Because "we have backups" and "we have *tested* backups" are two very different statements. Our backup strategy follows the "trust no one, verify everything" philosophy—with a dash of "seriously, verify it again" for good measure. Colonial Pipeline wishes they had been this paranoid.
+
+- Automated Backup Systems
+    - restic with encryption-at-rest
+    - Immutable snapshot management
+    - Multi-target replication
+    - Tamper-evident storage
+- Recovery Testing
+    - Automated restore verification
+    - Integrity validation routines
+    - Air-gapped backup copies
+    - Recovery simulation tools
+- State Management
+    - Configuration versioning
+    - System state snapshots
+    - Roll-back capabilities
+    - Point-in-time recovery
+- Disaster Recovery
+    - Documented recovery procedures
+    - Offline recovery tools
+    - Emergency access protocols
+    - Integrity verification chains
+
+#### Terminal Emulator Options
+
+##### Default Terminal
+- Modern terminal emulator with full feature set:
+    - Split pane support
+    - Tab management
+    - Command history
+    - Shell integration
+
+##### Optional: Warp Terminal
+The build script includes optional support for [Warp](https://www.warp.dev), a modern, Rust-based terminal that features GPU acceleration, AI assistance, and collaborative features. 
+
+To include Warp in your build:
+```bash
+./build.sh --with-warp
+```
+
+When enabled, the latest Warp AppImage will be downloaded during the build process and placed in the built image's `/var/lib/warp` directory. Note that Warp:
+- Requires a GPU that supports OpenGL 3.3+
+- Is currently in beta for Linux
+- Requires a free account for basic functionality, and that paid subscriptions are required to unlock full access to LLM assistants
+- Is proprietary software (not open source)
+
+The AppImage is downloaded fresh with each build to ensure compliance with Warp's distribution terms.
+
+### Stock Security Toolkit
+
+The distribution comes equipped with a comprehensive suite of security tools, carefully selected to provide a complete security operations workflow while maintaining ease of use. The toolkit spans the full spectrum of security needs, from system hardening and monitoring to incident response and forensics. Core components like AppArmor provide mandatory access control, while specialized tools enable thorough system auditing, network analysis, and threat detection. The toolkit supports both proactive security measures through tools like Lynis and AIDE, as well as reactive capabilities with forensics utilities such as Sleuthkit and dc3dd.
+
+#### System Monitoring and Auditing
+
+Effective system security begins with comprehensive visibility. This toolkit integrates multiple layers of monitoring and auditing capabilities to maintain continuous system observability. From low-level system calls to high-level resource utilization, these tools work in concert to provide a complete picture of system activity and maintain detailed audit trails for security analysis and compliance requirements.
+
+- `auditd` + `audispd-plugins`: System call auditing and plugin framework
+    - Captures and logs security-critical system events
+    - Maintains tamper-resistant audit trails for compliance
+    - Extensible plugin architecture for custom monitoring
+    - Configurable rules for focused event capture
+- `sysstat`, `iotop`, `htop`, `atop`: System performance monitoring
+    - Real-time resource utilization tracking
+    - Historical performance trend analysis
+    - I/O bottleneck identification
+    - Process behavior monitoring
+- `logwatch`, `syslog-ng`: Log management and analysis
+    - Centralized log aggregation and routing
+    - Automated log analysis and reporting
+    - Configurable alert thresholds
+    - Log integrity verification
+
+#### Intrusion Detection and Prevention
+
+Detecting and kicking out unwelcome snoops who'd love to steal your coding inspirations (and anything else they can get their grubby little mitts on) requires multiple layers of defense. This toolkit combines both signature-based and behavior-based detection methods to create a robust security posture. From file integrity monitoring to sophisticated rootkit detection, these tools work in concert to identify potential compromises. Regular automated scans help ensure system integrity, while real-time monitoring helps catch suspicious activities as they occur.
+
+- `aide`, `rkhunter`, `chkrootkit`: File integrity and rootkit detection
+    - AIDE maintains cryptographic checksums of critical system files
+    - Detects file modifications, additions, and deletions
+    - RKHunter and Chkrootkit provide complementary rootkit scanning
+    - Identifies common rootkit signatures and suspicious system modifications
+- `tripwire`: File and directory integrity checker
+    - Policy-driven integrity monitoring
+    - Cryptographically secure database of system state
+    - Detailed reporting of file system changes
+    - Configurable rules for different security levels
+- `unhide`, `tiger`: Process and anomaly detection
+    - Identifies hidden processes and ports
+    - Detects discrepancies between different system views
+    - Tiger performs comprehensive security audits
+    - Automated system security status reporting
+
+#### Network Security
+
+Let's face it; your cybersecurity infrastructure is only as good as your ability to detect and respond to the latest threats. This collection of network security tools helps you monitor, control, and secure all traffic flowing through your system. From packet inspection to intrusion detection, these tools work together to keep your network communications locked down tight.
+
+- `nmap`, `netstat`, `ss`: Network scanning and monitoring
+    - Comprehensive port and service detection
+    - Real-time connection tracking
+    - Network topology mapping
+    - Service version detection and security assessment
+- `tcpdump`, `wireshark`: Network packet analysis
+    - Deep packet inspection capabilities
+    - Traffic pattern analysis
+    - Protocol-specific debugging
+    - Network forensics support
+- `fail2ban`, `iptables`: Access control and intrusion prevention
+    - Automated ban system for malicious actors
+    - Customizable firewall rule management
+    - Protection against brute force attacks
+    - Rate limiting and access control
+- `snort`, `suricata`: Network intrusion detection
+    - Real-time traffic analysis
+    - Threat detection and prevention
+    - Protocol analysis
+    - Custom rule creation support
 
 ## Prerequisites
 
@@ -13,21 +213,24 @@ No other dependencies are required as all build tools are contained within the b
 
 ## Project Structure
 
-.
-├── .gitignore               # Git exclusions
-├── build.sh                 # - Main build automation script -
-├── overlay-includes.chroot/    # System files and configurations to be overlaid in chroot environment
-├── Dockerfile               # Container definition for build environment
-├── build/                   # Main build directory
-│   ├── auto/                # Build automation scripts
-│   │   ├── config           # Build configuration
-│   │   └── build            # Build script
-│   └── config/              # Live build configuration (contents generated by `lb config`)
-└── overlay-config/           # Preserved overlay configurations
-    ├── archives/            # Overlay archive configurations
-    ├── hooks/               # Overlay build hook scripts
-    ├── includes/            # Overlay file inclusions
-    └── package-lists/       # Overlay package selections
+devops-live-usb
+├── .gitignore                 # Git exclusions
+├── build.sh                   # - Main build automation script -
+├── overlay-includes.chroot/   # System files and configurations to be overlaid in chroot environment
+├── Dockerfile                 # Container definition for build environment
+├── Documentation              # Extended documentation directory
+│   ├── 01-Network-Hardening-Reference.md
+│   └── 02-Container-Security-Reference.md
+├── build/                     # Main build directory
+│   ├── auto/                  # Build automation scripts
+│   │   ├── config             # Build configuration
+│   │   └── build              # Build script
+│   └── config/                # Live build configuration (contents generated by `lb config`)
+└── overlay-config/            # Preserved overlay configurations
+    ├── archives/              # Overlay archive configurations
+    ├── hooks/                 # Overlay build hook scripts
+    ├── includes/              # Overlay file inclusions
+    └── package-lists/         # Overlay package selections
 ```
 
 The `build/` directory serves as the main live-build working directory, containing all configuration and automation scripts needed to create the live image. While build artifacts themselves are excluded from version control, the directory structure and configuration files are tracked because they define how the system is constructed.
@@ -172,185 +375,40 @@ This project uses Debian live-build's standard customization mechanisms with mod
 
 All modifications are version controlled, providing clear tracking of changes and enabling collaborative development.
 
+## Network Security Hardening
+This distribution implements comprehensive network security measures combining kernel hardening, firewall rules, and nftables-based defense-in-depth mechanisms to protect against common network-based threats:
+
+- Kernel security parameters configured for protection against SYN floods, IP spoofing, and various network-based attacks
+- Defense-in-depth network security approach using nftables
+- Default-deny firewall policy with targeted allowances for required services
+- Multi-layered connection tracking and state validation
+- Rate limiting and anti-scan protection mechanisms
+- Comprehensive security event logging with flood protection
+
+For detailed technical implementation information, see [Network Hardening Reference](Documentation/01-Network%20Hardening%20Reference.md).
+This distribution implements comprehensive network security measures combining kernel hardening, firewall rules, and nftables-based defense-in-depth mechanisms to protect against common network-based threats:
+
+- Kernel security parameters configured for protection against SYN floods, IP spoofing, and various network-based attacks
+- Defense-in-depth network security approach using nftables
+- Default-deny firewall policy with targeted allowances for required services
+- Multi-layered connection tracking and state validation
+- Rate limiting and anti-scan protection mechanisms
+- Comprehensive security event logging with flood protection
+
 ## Container Configuration and Security
 
-The container runtime system in this distribution provides a secure, user-friendly environment that balances security with usability.
+The distribution implements a comprehensive container runtime system that prioritizes security while maintaining usability:
 
-### Storage Configuration
-- **Overlay Storage**: Uses fuse-overlayfs driver for efficient container layering
-- **Quota Management**: Implements storage quotas (default: 10GB)
-- **Directory Structure**: Automated creation of required storage hierarchy
-- **SELinux Integration**: Proper context management for container storage
+- Secure storage implementation using fuse-overlayfs with strict access controls
+- User-level container management with automatic environment configuration
+- Rootless container operations by default through Podman
+- Multi-layered security featuring SELinux integration and strict access controls
+- Resource management with quota enforcement and monitoring
+- Network isolation by default with controlled access mechanisms
+- Comprehensive error handling and security event logging
 
-### User Container Management
-
-The framework provides comprehensive user-level container management:
-
-#### User Setup
-- **Automatic Configuration**: Per-user container environment setup
-- **Non-System Users**: Targets users with UID >= 1000
-- **Configuration Isolation**: User-specific container configurations
-- **Rootless Operation**: Default rootless container support via Podman
-
-#### Initialization Process
-- **Clean State**: Automatic system reset during initialization
-- **Permission Structure**: User-owned configuration directories
-- **Configuration Templates**: Standard container configurations per user
-
-### Security Features
-
-The container runtime implements multiple security layers:
-
-#### Access Control
-- **Directory Permissions**: Strict 700 permissions for storage
-- **SELinux Contexts**: Container-specific security contexts
-- **User Isolation**: Separate configurations per user
-- **Storage Verification**: Mount point and permission validation
-
-#### Operational Security
-- **Rootless Containers**: Non-privileged container operations
-- **Storage Isolation**: Separate storage spaces per user
-- **Mount Safety**: Verified mount point security
-- **Error Handling**: Secure failure handling and logging
-
-### Network Security Considerations
-
-Our distribution implements strict default network isolation for containers to enhance security:
-
-#### Default Network Policy
-- **Network Isolation**: Containers have no external network access by default
-- **Security-First Design**: Requires explicit action to enable networking
-- **Attack Surface Reduction**: Minimizes potential network-based vulnerabilities
-- **Data Control**: Prevents unauthorized data exfiltration
-
-#### Enabling Container Networking
-When network access is required:
-1. Create isolated networks for specific workloads
-2. Use host networking tools from within containers when possible
-3. Implement proper network namespacing
-4. Configure explicit network policies
-
-#### Best Practices
-- Enable networking only when absolutely necessary
-- Use separate networks for different container groups
-- Implement proper network isolation between containers
-- Monitor and log container network activity
+For detailed technical implementation information, see [Container Security Reference](Documentation/02-Container-Security-Reference.md).
 - Regularly audit container network configurations
-
-## Git Workflow
-
-This repository tracks only configuration files and scripts. Build artifacts and the source image are excluded via .gitignore.
-
-Basic workflow:
-1. Create a branch for your changes:
-```bash
-git checkout -b feature/new-feature
-```
-2. Make changes to configurations
-3. Commit your changes:
-```bash
-git add -A
-git commit -m "Description of changes"
-```
-4. Push to remote (optional):
-```bash
-git push origin feature/new-feature
-```
-
-For significant changes, use feature branches and merge them back to main once tested.
-
-## Security Hardening
-
-This section details the security measures implemented and planned for our custom Debian-based distribution. Each measure is carefully selected to enhance system security while maintaining usability.
-### Kernel and System Hardening
-
-**Status: Partially Implemented**
-
-✓ Implemented Features:
-- **Kernel Parameter Hardening** (/etc/sysctl.d/99-security-hardening.conf):
-- Network stack protection against common attacks (SYN floods, IP spoofing)
-- Restricted IP forwarding and packet redirection
-- Disabled core dumps for security-sensitive processes
-- Improved memory protection against buffer overflows
-- Enhanced file system security controls
-
-⊗ Planned Enhancements:
-- AppArmor profile refinements for system services
-- Kernel module blacklisting for unused hardware support
-- Process scheduling and resource limits optimization
-- Boot-time security parameter enforcement
-
-### Authentication and Access Control
-
-**Status: Planned**
-
-⊗ Planned Features:
-- Enhanced PAM configuration:
-- Strong password requirements using pam_pwquality
-- Account lockout after failed attempts
-- Password aging and history policies
-- Restricted sudo access and command logging
-- Session timeout configuration
-- USB storage device access controls
-
-### Network Security
-
-**Status: Partially Implemented**
-
-✓ Implemented Features:
-- Restrictive default network parameters via sysctl
-- TCP/IP stack hardening against common attacks
-- Comprehensive NFTables firewall implementation:
-- Sophisticated rate limiting for different services
-- Anti-scanning protection mechanisms
-- TCP flag validation and state enforcement
-- Connection tracking and state management
-- Comprehensive security event logging
-- Protection against common network attacks
-- Default-deny policy with explicit allows
-- Hardened SSH Client Configuration:
-- Modern cryptographic settings:
-- Strong ciphers (ChaCha20-Poly1305, AES-GCM)
-- Secure MACs with ETM variants
-- Modern key exchange algorithms (Curve25519)
-- Strict host key verification enforcement
-- Public key authentication only
-- Disabled agent forwarding
-- Disabled X11 forwarding
-- Conservative connection timeouts
-- Limited connection attempts
-- Restrictive forwarding controls
-⊗ Planned Enhancements:
-- Network monitoring and analysis tools
-- Automated intrusion detection
-- Network segmentation improvements
-### File System and Process Security
-
-**Status: Planned**
-
-⊗ Planned Features:
-- Mount options hardening:
-- noexec, nosuid, nodev where appropriate
-- Separate partitions for /tmp, /var, /home
-- File permission reviews and adjustments
-- AIDE (Advanced Intrusion Detection Environment) implementation
-- Process isolation and resource constraints
-- Temporary file security enhancements
-
-### Monitoring and Auditing
-
-#### Planned:
-- Auditd configuration:
-- System call auditing
-- File access monitoring
-- Security event logging
-- Enhanced logging configuration:
-- Remote logging setup
-- Log rotation and compression
-- Critical event alerting
-- Regular system integrity checking
-- Security compliance scanning tools
-Note: This security configuration balances protection with usability, focusing on hardening measures appropriate for a live system environment. Some features may be configurable at runtime to allow user customization.
 
 ## Memory Management
 
@@ -391,102 +449,24 @@ The system uses a dynamic ZRAM configuration that adapts to the host system's av
 - Conservative swapping on limited RAM systems
 - Balanced approach for build and container workloads
 
-## DevOps Toolkit
+## For Contributors: Git Workflow
 
-### Optional: Warp Terminal
+This repository tracks only configuration files and scripts. Build artifacts and the source image are excluded via .gitignore.
 
-The build script includes optional support for [Warp](https://www.warp.dev), a modern, Rust-based terminal that features GPU acceleration, AI assistance, and collaborative features. 
-
-To include Warp in your build:
+Basic workflow:
+1. Create a branch for your changes:
 ```bash
-./build.sh --with-warp
+git checkout -b feature/new-feature
+```
+2. Make changes to configurations
+3. Commit your changes:
+```bash
+git add -A
+git commit -m "Description of changes"
+```
+4. Push to remote (optional):
+```bash
+git push origin feature/new-feature
 ```
 
-When enabled, Warp AppImage will be downloaded during the build process and placed in the built image's `/var/lib/warp` directory. Note that Warp:
-- Requires a GPU that supports OpenGL 3.3+
-- Is currently in beta for Linux
-- Requires a free account for basic functionality, and that paid subscriptions are required to unlock full access to LLM assistants
-- Is proprietary software (not open source)
-
-The AppImage is downloaded fresh with each build to ensure compliance with Warp's distribution terms.
-
-
-## Appendix A: Security Implementation Details
-
-This appendix provides detailed documentation of the security measures implemented in our custom Debian-based distribution.
-
-### Network Security Implementation
-
-Our network security implementation uses nftables with a defense-in-depth approach, combining multiple security mechanisms:
-
-#### Rate Limiting Implementation
-- **ICMP Traffic**: Limited to 10 packets per second to prevent ICMP floods while maintaining network diagnostics
-- **Standard TCP Services**: 30 connections per minute per source, balancing service availability with DoS protection
-- **Critical Services**: 60 connections per minute per source for essential services requiring higher throughput
-
-#### Anti-Scan Protection
-- **Port Scan Detection**: Tracks and blocks sources making multiple failed connection attempts
-- **Service Probing Protection**: Rate limits on new connection attempts per source IP
-- **Connection State Tracking**: Maintains state table for legitimate connections
-- **Auto-blacklisting**: Temporary blocks for IPs showing scanning behavior
-
-#### TCP Protocol Security
-- **Flag Validation**: Enforces RFC-compliant TCP flag combinations
-- **Invalid Flag Detection**: Blocks packets with illegal flag combinations (e.g., SYN+FIN, FIN without ACK)
-- **State Tracking**: Validates TCP handshake sequence
-- **Anti-Spoofing**: Verifies packet sequences match expected states
-
-#### Connection Tracking
-- **State-based Filtering**: Allows only packets belonging to established connections
-- **Dynamic State Table**: Adapts to connection volume while preventing state table overflow
-- **Timeout Optimization**: Customized timeouts for different protocols and states
-- **Invalid State Drop**: Immediate rejection of packets not matching valid state transitions
-
-#### Logging Implementation
-- **Security Event Logging**: Records suspicious activity with source details
-- **Rate-limited Logging**: Prevents log flooding during attacks
-- **Attack Pattern Recognition**: Logs patterns indicating potential attacks
-- **Audit Trail**: Maintains detailed records for security analysis
-
-### System Hardening Implementation
-
-Our system hardening measures focus on kernel and system-level security while maintaining usability:
-
-#### Kernel Security Parameters
-- **ASLR (Address Space Layout Randomization)**
-- Implemented: `kernel.randomize_va_space = 2`
-- Rationale: Maximum protection against buffer overflow exploits
-- Impact: Negligible performance impact, significant security benefit
-
-- **Restricted Core Dumps**
-- Implementation: Disabled for sensitive processes
-- Rationale: Prevents exposure of sensitive data in crash dumps
-- Trade-off: More challenging debugging, but essential for security
-
-- **Network Stack Hardening**
-- TCP SYN cookie protection
-- RFC1337 compliance
-- Reverse path filtering
-- ICMP redirect restrictions
-- Rationale: Prevents common network-based attacks
-
-#### File System Security
-- **Mount Options**
-- noexec on /tmp and temporary storage
-- nosuid where appropriate
-- nodev restrictions
-- Rationale: Prevents execution of malicious code from mounted filesystems
-
-#### Process Isolation
-- **Resource Limits**
-- Controlled through systemd slices
-- Memory, CPU, and I/O restrictions
-- Rationale: Prevents resource exhaustion attacks
-
-#### Security vs. Usability Considerations
-- **Rate Limiting**: Balanced to prevent abuse while allowing legitimate use
-- **Connection Tracking**: Sized for typical workloads while preventing state table floods
-- **Resource Controls**: Tuned to allow normal operation while preventing abuse
-- **Logging**: Detailed enough for security analysis without overwhelming storage
-This implementation demonstrates our commitment to security while maintaining system usability. Each measure is carefully chosen and configured to provide maximum protection with minimal impact on legitimate usage patterns.
-
+For significant changes, use feature branches and merge them back to main once tested.

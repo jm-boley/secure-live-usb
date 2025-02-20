@@ -65,3 +65,78 @@
     - Version bumping
     - Changelog generation
     - Asset publishing
+
+## Security Hardening
+
+Our security measures are carefully selected to enhance system security while maintaining usability.
+
+### Kernel and System Hardening
+
+**Status: Partially Implemented**
+
+✓ Implemented Features:
+- **Kernel Parameter Hardening** (/etc/sysctl.d/99-security-hardening.conf):
+    - Network stack protection against common attacks (SYN floods, IP spoofing)
+    - Restricted IP forwarding and packet redirection
+    - Disabled core dumps for security-sensitive processes
+    - Improved memory protection against buffer overflows
+    - Enhanced file system security controls
+
+⊗ Planned Enhancements:
+- AppArmor profile refinements for system services
+- Kernel module blacklisting for unused hardware support
+- Process scheduling and resource limits optimization
+- Boot-time security parameter enforcement
+
+### Authentication and Access Control
+
+**Status: Planned**
+
+⊗ Planned Features:
+- Enhanced PAM configuration:
+    - Strong password requirements using pam_pwquality
+    - Account lockout after failed attempts
+    - Password aging and history policies
+    - Restricted sudo access and command logging
+    - Session timeout configuration
+    - USB storage device access controls
+
+### Network Security
+
+**Status: Partially Implemented**
+
+⊗ Planned Enhancements:
+- Network monitoring and analysis tools
+- Automated intrusion detection
+- Network segmentation improvements
+
+### File System and Process Security
+
+**Status: Planned**
+
+⊗ Planned Features:
+- Mount options hardening:
+    - noexec, nosuid, nodev where appropriate
+    - Separate partitions for /tmp, /var, /home
+- File permission reviews and adjustments
+- AIDE (Advanced Intrusion Detection Environment) implementation
+- Process isolation and resource constraints
+- Temporary file security enhancements
+
+### Monitoring and Auditing
+
+**Status: Planned**
+
+⊗ Planned Features:
+- Auditd configuration:
+    - System call auditing
+    - File access monitoring
+    - Security event logging
+- Enhanced logging configuration:
+    - Remote logging setup
+    - Log rotation and compression
+    - Critical event alerting
+- Regular system integrity checking
+- Security compliance scanning tools
+
+Note: This security configuration balances protection with usability, focusing on hardening measures appropriate for a live system environment. Some features may be configurable at runtime to allow user customization.
