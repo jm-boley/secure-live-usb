@@ -35,53 +35,11 @@ Modern development demands container isolation, but security shouldn't be option
 
 #### Development Environment (Visual Studio Code)
 
-Because paranoid doesn't mean you can't have nice things. VS Code provides a modern, extensible development environment that's been carefully configured to maintain security without getting in your way. Trust, but verify—and maybe add a few more verification layers just to be sure.
-
-- Security-First Extensions
-    - Container development in isolated environments
-    - Git integration with mandatory GPG signing
-    - Real-time YAML security validation
-    - Infrastructure as Code vulnerability scanning
-- Workspace Protection
-    - Isolated extension host processes
-    - Restricted execution environments
-    - Sandboxed debugging sessions
-    - Resource usage limitations
-- Remote Development
-    - Secure container-based workflows
-    - SSH remote development with key management
-    - Protected credential handling
-    - Isolated development networks
-- Terminal Integration
-    - Native shell access with environment isolation
-    - Integrated credential management
-    - Command history protection
-    - Environment variable security controls
+** Planned **
 
 #### Version Control (Git)
 
-Because your code history deserves witness protection. Our Git configuration ensures every commit is signed, every merge is verified, and your repository history is tamper-evident.
-
-- Cryptographic Integrity
-    - GPG signing enabled by default
-    - Commit verification enforcement
-    - Tag authentication requirements
-    - Merge commit validation
-- Access Control
-    - Safe directory enforcement
-    - Protected config handling
-    - Secure credential storage
-    - Remote trust management
-- Workflow Security
-    - Protected branch policies
-    - Code review enforcement
-    - Signed tag requirements
-    - Clean/smudge filter controls
-- Collaboration Tools
-    - Secure remote operations
-    - Verified patch handling
-    - Protected reflog history
-    - Conflict resolution tracking
+** Planned **
 
 #### Backup and Recovery Tools
 
