@@ -213,6 +213,7 @@ No other dependencies are required as all build tools are contained within the b
 
 ## Project Structure
 
+```
 devops-live-usb
 ├── .gitignore                 # Git exclusions
 ├── build.sh                   # - Main build automation script -
