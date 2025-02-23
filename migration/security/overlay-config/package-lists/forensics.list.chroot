@@ -1,0 +1,21 @@
+## Digital Forensics
+# Forensic analysis tools
+autopsy               # Digital forensics platform
+dc3dd                # Enhanced version of dd for forensics
+foremost             # Forensic file recovery
+scalpel              # Fast file carver
+sleuthkit            # Collection of forensics analysis tools
+
+## Data Recovery
+# File recovery and analysis
+ddrescue             # Data recovery tool
+extundelete          # Ext3/4 file recovery utility
+testdisk             # Partition scanning and recovery
+photorec             # File data recovery software
+
+## Memory Analysis
+# Memory forensics
+volatility           # Memory forensics framework
+memory-analysis-tools # Collection of memory analysis utilities
+memdump              # Memory dumping utility
+

@@ -1,0 +1,19 @@
+## System Hardening
+# System security tools
+aide                   # Advanced Intrusion Detection Environment
+chkrootkit            # Rootkit detector
+fail2ban              # Ban hosts that cause authentication errors
+rkhunter              # Rootkit, backdoor, and exploit detector
+
+## Access Control
+# Authentication and authorization
+acl                    # Access control list utilities
+auditd                 # System audit daemon
+libpam-cracklib       # PAM module for password strength testing
+sudo                   # Superuser access management
+
+## File Integrity
+# File system security
+checksecurity         # Basic system security checks
+tripwire              # File integrity checker
+

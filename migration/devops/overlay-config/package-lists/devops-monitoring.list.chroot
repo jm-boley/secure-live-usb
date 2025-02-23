@@ -1,0 +1,18 @@
+## Service Monitoring
+monit
+supervisord
+prometheus-node-exporter
+
+## System Statistics Collection
+collectd
+telegraf
+netdata
+
+## Visualization
+grafana
+
+## Process and Resource Monitoring
+htop
+atop
+iotop
+

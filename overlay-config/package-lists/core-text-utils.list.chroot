@@ -1,0 +1,19 @@
+# Text Processing and Editing Tools
+# This list contains tools for text manipulation, editing, and processing
+
+## Text Editors
+vim-nox          # Full-featured vim without X11 dependencies
+nvim             # Neovim power editor
+nano             # Simple text editor for quick edits
+
+## Text Viewers and Processing
+bat              # Modern replacement for cat with syntax highlighting
+less             # Standard file viewer/pager
+ripgrep          # Fast, modern replacement for grep
+
+## Terminal Utilities
+tmux             # Terminal multiplexer for session management
+
+## Data Processing
+jq               # JSON processor
+

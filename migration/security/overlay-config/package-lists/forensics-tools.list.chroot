@@ -1,0 +1,28 @@
+## Digital Forensics
+# Disk and data recovery tools
+autopsy                # Digital forensics platform
+binwalk                # Firmware analysis tool
+dc3dd                  # Enhanced version of dd for forensics
+extundelete           # Ext3/4 file recovery utility
+foremost              # File recovery tool
+photorec              # File recovery utility
+recoverjpeg           # JPEG recovery tool
+scalpel               # Fast file carver
+sleuthkit             # Digital forensics analysis tools
+testdisk              # Partition scanner and recovery tool
+
+## Memory Forensics
+# Memory analysis tools
+memtool               # Memory analysis utility
+volatility            # Memory forensics framework
+
+## Secure File Operations
+# File analysis and secure deletion
+exiftool              # Meta information reader/writer
+hashdeep              # Recursively compute hashes
+mat2                  # Metadata removal tool
+paperkey              # Digital key archival
+secure-delete         # Secure file deletion
+srm                   # Secure file deletion
+wipe                  # Secure file deletion
+

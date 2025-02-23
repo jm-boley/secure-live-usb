@@ -1,0 +1,22 @@
+# Network Tools and Utilities
+# This list contains networking tools, diagnostics, and transfer utilities
+
+## Network Diagnostics
+mtr-tiny         # Network diagnostic tool combining ping and traceroute
+traceroute       # Trace the route to a host
+net-tools        # Legacy networking tools (netstat, ifconfig, etc.)
+iproute2         # Modern networking tools (ip, ss, etc.)
+nmap             # Network exploration and security scanning
+tcpdump         # Network packet analyzer
+
+## Network Utilities
+curl             # Command line tool for transferring data
+wget             # Non-interactive network downloader
+socat            # Multipurpose relay for bidirectional data transfer
+netcat-openbsd   # TCP/IP swiss army knife
+openssh-client   # Secure shell client
+
+## DNS Tools
+bind9-dnsutils   # DNS utilities (dig, nslookup, etc.)
+whois            # Client for the whois directory service
+

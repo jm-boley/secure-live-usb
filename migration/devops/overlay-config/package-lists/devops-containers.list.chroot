@@ -1,0 +1,19 @@
+## Container Runtime and Management Tools
+podman
+buildah
+skopeo
+containers-common
+
+## Container Orchestration
+kubectl
+kubectl-kubectx
+helm
+k9s
+
+## Container Composition and Monitoring
+docker-compose
+podman-compose
+ctop
+cgroup-tools
+conmon
+

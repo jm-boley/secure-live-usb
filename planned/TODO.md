@@ -1,8 +1,8 @@
 # Core Infrastructure Tasks
 
 > Note: Data persistence features are now managed as separate subprojects:
-> - Container persistence: See `planned/container-persistence.md`
 > - Standard persistence: See `planned/standard-persistence.md`
+> - Spin-specific persistence: See respective spin documentation
 
 ## High Priority
 
@@ -27,220 +27,51 @@
 
 ## Documentation
 
-### Development Guidelines
-- Create CONTRIBUTING.md with:
-    - Code style guidelines
-    - Pull request process
-    - Development setup instructions
-- Develop SECURITY.md including:
-    - Security policy
-    - Vulnerability reporting process
-    - Security best practices
-
 ### User Documentation
 - Enhance README.md with:
     - Quick-start guide
     - Troubleshooting section
-    - Build status badges
+    - Links to spin-specific documentation
 - Add example configurations in delta/
 - Document version tagging strategy
 
-## CI/CD Infrastructure
+### Documentation Reorganization
+- Implement hybrid documentation approach:
+    ```
+    Wiki/
+    ├── Technical References/
+    │   ├── Network Hardening Guide
+    │   └── Container Security Guide
+    ├── Best Practices/
+    │   ├── Network Security
+    │   └── Container Security
+    └── Implementation Examples/
+        ├── Network Configurations
+        └── Container Configurations
 
-### Testing Pipeline
-- Set up automated testing:
-    - Unit tests
-    - Integration tests
-    - Build verification
-- Implement automated builds for all stages
+    Repo/
+    ├── docs/
+    │   ├── network-configs/
+    │   │   └── current-settings.md
+    │   └── container-configs/
+    │       └── default-policies.md
+    └── README.md (with wiki links)
+    ```
 
-### Security and Quality
-- Add security scanning:
-    - Dependency scanning
-    - Container scanning
-    - Code quality checks
+#### Implementation Steps
+- Create wiki infrastructure and initial structure
+- Migrate existing technical references to wiki:
+    - Network Hardening Reference
+    - Container Security Reference
+- Extract version-specific configurations to repo
+- Update README.md with wiki links
+- Implement cross-referencing between repo docs and wiki
+- Review and migrate additional technical content as needed
 
-### Release Management
-- Implement release automation:
-    - Version bumping
-    - Changelog generation
-    - Asset publishing
-
-## Security Hardening
-
-Our security measures are carefully selected to enhance system security while maintaining usability.
-
-### Kernel and System Hardening
-
-**Status: Partially Implemented**
-
-✓ Implemented Features:
-- **Kernel Parameter Hardening** (/etc/sysctl.d/99-security-hardening.conf):
-    - Network stack protection against common attacks (SYN floods, IP spoofing)
-    - Restricted IP forwarding and packet redirection
-    - Disabled core dumps for security-sensitive processes
-    - Improved memory protection against buffer overflows
-    - Enhanced file system security controls
-
-⊗ Planned Enhancements:
-- AppArmor profile refinements for system services
-- Kernel module blacklisting for unused hardware support
-- Process scheduling and resource limits optimization
-- Boot-time security parameter enforcement
-
-### Authentication and Access Control
-
-**Status: Planned**
-
-⊗ Planned Features:
-- Enhanced PAM configuration:
-    - Strong password requirements using pam_pwquality
-    - Account lockout after failed attempts
-    - Password aging and history policies
-    - Restricted sudo access and command logging
-    - Session timeout configuration
-    - USB storage device access controls
-
-### Network Security
-
-**Status: Partially Implemented**
-
-⊗ Planned Enhancements:
-- Network monitoring and analysis tools
-- Automated intrusion detection
-- Network segmentation improvements
-
-### File System and Process Security
-
-**Status: Planned**
-
-⊗ Planned Features:
-- Mount options hardening:
-    - noexec, nosuid, nodev where appropriate
-    - Separate partitions for /tmp, /var, /home
-- File permission reviews and adjustments
-- AIDE (Advanced Intrusion Detection Environment) implementation
-- Process isolation and resource constraints
-- Temporary file security enhancements
-
-### Monitoring and Auditing
-
-**Status: Planned**
-
-⊗ Planned Features:
-- Auditd configuration:
-    - System call auditing
-    - File access monitoring
-    - Security event logging
-- Enhanced logging configuration:
-    - Remote logging setup
-    - Log rotation and compression
-    - Critical event alerting
-- Regular system integrity checking
-- Security compliance scanning tools
-
-### DevOps Tooling Security
-
-#### Git Security Hardening
-
-**Status: Planned**
-
-⊗ Planned Features:
-- Cryptographic integrity features:
-    - GPG signing for commits and tags
-    - Commit verification enforcement
-    - Tag authentication requirements
-    - Merge commit validation
-- Access control features:
-    - Safe directory enforcement
-    - Protected config handling
-    - Secure credential storage
-    - Remote trust management
-- Workflow security features:
-    - Protected branch policies
-    - Code review enforcement
-    - Signed tag requirements
-    - Clean/smudge filter controls
-- Collaboration tools:
-    - Secure remote operations
-    - Verified patch handling
-    - Protected reflog history
-    - Conflict resolution tracking
-
-**Documentation**
-
-Because your code history deserves witness protection. Our Git configuration ensures every commit is signed, every merge is verified, and your repository history is tamper-evident.
-
-- Cryptographic Integrity
-    - GPG signing enabled by default
-    - Commit verification enforcement
-    - Tag authentication requirements
-    - Merge commit validation
-- Access Control
-    - Safe directory enforcement
-    - Protected config handling
-    - Secure credential storage
-    - Remote trust management
-- Workflow Security
-    - Protected branch policies
-    - Code review enforcement
-    - Signed tag requirements
-    - Clean/smudge filter controls
-- Collaboration Tools
-    - Secure remote operations
-    - Verified patch handling
-    - Protected reflog history
-    - Conflict resolution tracking
-
-#### VSCode Security Hardening
-
-**Status: Planned**
-
-⊗ Planned Features:
-- Security-first extensions:
-    - Code analysis and vulnerability scanning
-    - Secrets detection
-    - Security linting integration
-    - Compliance checking tools
-- Workspace protection features:
-    - Trusted workspace enforcement
-    - Extension sandboxing
-    - Resource access controls
-    - Settings security policies
-- Remote development security:
-    - Secure tunneling configuration
-    - Authentication hardening
-    - Connection encryption
-    - Port forwarding controls
-- Terminal integration security:
-    - Command execution policies
-    - Environment isolation
-    - Variable protection
-    - Shell security hardening
-
-**Documentation**
-Because paranoid doesn't mean you can't have nice things. VS Code provides a modern, extensible development environment that's been carefully configured to maintain security without getting in your way. Trust, but verify—and maybe add a few more verification layers just to be sure.
-
-- Security-First Extensions
-    - Container development in isolated environments
-    - Git integration with mandatory GPG signing
-    - Real-time YAML security validation
-    - Infrastructure as Code vulnerability scanning
-- Workspace Protection
-    - Isolated extension host processes
-    - Restricted execution environments
-    - Sandboxed debugging sessions
-    - Resource usage limitations
-- Remote Development
-    - Secure container-based workflows
-    - SSH remote development with key management
-    - Protected credential handling
-    - Isolated development networks
-- Terminal Integration
-    - Native shell access with environment isolation
-    - Integrated credential management
-    - Command history protection
-    - Environment variable security controls
-
-
-Note: This security configuration balances protection with usability, focusing on hardening measures appropriate for a live system environment. Some features may be configurable at runtime to allow user customization.
+### Data Persistence
+- Implement standard persistence features:
+    - User data preservation
+    - System configuration backup
+    - State restoration tools
+- Create unified persistence documentation
+- Add recovery procedures guide

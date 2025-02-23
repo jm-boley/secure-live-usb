@@ -1,0 +1,32 @@
+## Shell packages for DevOps environment
+# This list provides zsh and supporting packages for an enhanced shell experience
+# primarily used in conjunction with oh-my-zsh (which needs separate installation)
+
+# Core shell packages
+zsh
+zsh-autosuggestions
+zsh-syntax-highlighting
+
+# Common utilities used by oh-my-zsh plugins
+autojump
+command-not-found
+fd-find
+
+# Font packages for powerline/agnoster themes
+fonts-powerline
+fonts-font-awesome
+
+# Shell enhancements
+fzf
+thefuck
+direnv
+
+# Terminal-based file management
+ranger                 # Advanced terminal file manager
+w3m                   # Text-based web browser, used by ranger for HTML preview
+highlight             # Universal source code highlighter
+poppler-utils         # PDF rendering utilities
+mediainfo            # Display information about media files
+atool                # Archive file management tools
+caca-utils           # Text-based image viewing utilities
+odt2txt              # OpenDocument text converter

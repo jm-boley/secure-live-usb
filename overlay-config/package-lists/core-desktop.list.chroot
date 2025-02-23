@@ -1,0 +1,36 @@
+# Desktop Environment Packages
+# This list contains the core desktop applications and utilities required
+# for both DevOps and Security/Forensics workflows
+
+# Core Desktop Environment - LXQt
+lxqt
+lxqt-core
+qterminal
+pcmanfm-qt
+lxqt-sudo
+lightdm
+
+# Network Management and System Tray
+nm-tray
+system-monitoring-center
+qps
+cpu-x
+lxqt-powermanagement
+
+# Web Browser
+brave
+
+# Text Editors and IDEs
+featherpad
+
+# Screenshot and Screen Recording
+flameshot
+obs-studio
+peek
+
+# Audio and Multimedia
+pulseaudio
+pavucontrol-qt
+
+# System Performance
+zram-tools

@@ -1,0 +1,21 @@
+## Version Control
+git
+git-lfs
+
+## Data Processing Tools
+jq
+yq
+
+## Command Line Utilities
+curl
+wget
+rsync
+vim-nox
+
+## Build Tools
+make
+gcc
+g++
+python3-pip
+python3-venv
+

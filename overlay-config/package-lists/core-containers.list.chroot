@@ -1,0 +1,20 @@
+# Core Containerization Support
+# Provides Flatpak application sandboxing and desktop integration
+# Minimal implementation focusing on LXQt desktop environment compatibility
+
+# Flatpak Base System
+flatpak
+xdg-desktop-portal
+xdg-desktop-portal-gtk
+
+# LXQt Desktop Integration
+xdg-desktop-portal-lxqt
+
+# Permissions and Policy Support
+policykit-1
+xdg-utils
+
+# Dependent Libraries
+bubblewrap
+fuse3
+

@@ -1,0 +1,21 @@
+# System Monitoring and Process Management
+# This list contains tools for system observation, process control, and resource monitoring
+
+## Process Monitoring
+htop             # Interactive process viewer
+iotop            # I/O monitoring tool
+psmisc           # Process management utilities (pstree, killall, etc.)
+procps           # Process monitoring tools (ps, top, etc.)
+lsof             # List open files
+strace          # System call tracer
+
+## Resource Monitoring
+sysstat         # System performance tools (iostat, mpstat, etc.)
+progress        # Show progress of commands
+time            # Program resource usage measurement
+
+## System Information
+neofetch        # System information display tool
+inxi            # System information script
+lshw            # Hardware information tool
+

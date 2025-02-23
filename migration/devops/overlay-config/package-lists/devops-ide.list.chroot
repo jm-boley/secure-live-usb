@@ -1,0 +1,14 @@
+## Visual Studio Code
+code
+code-insiders
+
+## VS Code Dependencies
+curl
+gnupg2
+software-properties-common
+
+## Additional IDE Support
+python3-language-server
+nodejs
+npm
+

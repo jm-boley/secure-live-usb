@@ -1,0 +1,21 @@
+## System Analysis Tools
+# Process and system analysis
+acct                   # Process accounting utilities
+fatrace               # File access trace tool
+inotify-tools         # Filesystem monitoring
+sysdig                # System-level exploration and troubleshooting
+whowatch              # Real-time user logins/process monitoring
+
+## Security Assessment
+# System security tools
+checksecurity         # Basic system security checks
+clamav                # Antivirus scanner
+clamav-daemon         # Antivirus daemon
+debsecan              # Debian security analyzer
+lynis                 # Security auditing tool
+
+## Password Security
+# Password analysis tools
+hydra                 # Password cracking utility
+john                  # Password cracker
+

@@ -1,0 +1,23 @@
+# File Management and Utilities
+# This list contains tools for file operations, archiving, and system inspection
+
+## File Management and Navigation
+tree             # Directory structure visualization
+ncdu             # NCurses-based disk usage analyzer
+fd-find          # Modern alternative to find
+mc              # Midnight Commander terminal file manager
+renameutils      # Bulk file renaming tools
+
+## File Transfer and Synchronization
+rsync            # Fast, versatile file transfer and sync
+
+## Archive Management
+unzip            # Extract .zip archives
+zip             # Create .zip archives
+tar             # Create/extract tar-based archives
+gzip            # Create/extract gzip archives
+
+## File Analysis
+file            # File type determination
+xxd             # Hex viewer
+
