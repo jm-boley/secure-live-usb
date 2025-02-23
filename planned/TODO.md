@@ -25,6 +25,34 @@
 - Implement file backup system
 - Add rollback capability for failed operations
 
+## Repository Organization
+
+### Branch Migration Strategy
+- Implement Git worktree based approach for spin separation:
+    ```
+    # Create branches without switching
+    git branch devops
+    git branch security
+    
+    # Create separate worktrees
+    git worktree add ../devops-live-usb-devops devops
+    git worktree add ../devops-live-usb-security security
+    ```
+- Benefits:
+    - Direct organization of files in final locations
+    - Simultaneous work on multiple branches
+    - Independent testing of configurations
+    - Cleaner git history
+    - No cleanup of migration directories needed
+
+#### Implementation Steps
+- Create feature branches (devops, security)
+- Set up worktrees for each branch
+- Move current migration/{devops,security} content to respective worktrees
+- Test builds in each worktree
+- Remove worktrees after branch migration complete
+- Delete migration directory from main branch
+
 ## Documentation
 
 ### User Documentation
