@@ -1,420 +1,160 @@
-# Modular Debian Live Build System (Core)
+# DevOps Spin
 
-This project provides a framework for building customized Debian-based live distributions with a "security-first, performance-aware" philosophy at its core. We've created a system that proves robust security doesn't have to come at the cost of performance - each component is carefully selected and optimized to work together efficiently while maintaining strong security boundaries. Think of it as a finely-tuned race car with a complete safety system - fast when you need it, but always keeping you protected.
+## Overview
+The DevOps spin provides a streamlined environment for cloud-native development, container operations, and infrastructure management. Built on a lightweight LXQt desktop, it includes essential tools for modern DevOps workflows while maintaining good performance and resource efficiency.
 
-Built with essential security hardening and intelligent performance optimizations, our core system serves as the foundation for specialized "spins" targeting specific use cases:
+## Key Features
 
-- **DevOps Spin**: Extended with container runtime, development tools, and monitoring capabilities
-- **Security/Forensics Spin**: Enhanced with security analysis, forensics, and network monitoring tools
+### Container Runtime & Orchestration
 
-The core system implementation itself includes packages and tooling for a lightweight LXQt desktop with modern conveniences, such as a Network Management widget. Our layered security approach starts at the kernel level and extends through every aspect of the system, while careful performance tuning ensures responsive operation even on older hardware. This balanced approach creates a minimal but capable foundation that can be confidently extended for specialized uses without compromising either security or usability.
+This spin uses Podman as its primary container runtime, offering a modern, secure approach to container operations:
 
-The DevOps and Security spins are accessible from their respective branches of the same names. Each spin's project branch extends the core system with targeted package selections, configurations, and workflow optimizations while maintaining a consistent base architecture through merges from the core project.
+#### Core Container Tools
+- **Podman Container Engine**: A daemonless container runtime that emphasizes security through rootless containers. You can run containers without requiring root privileges, substantially reducing your security risk surface. Integration with systemd means better process management and system integration.
 
-## AI Use in Documentation Disclaimer
+- **Buildah & Skopeo**: Complementary tools that complete the container management ecosystem:
+- Buildah: For creating custom container images with granular control
+- Skopeo: For container image inspection and transfer between registries
 
-This project relies on the use of LLM's to help accelerate the project documentation process and allow it to keep pace with changes as they are made. Some stylistic inconsistencies, such as bullet point format schemas and conversational tone and approach, are inevitable as the documentation is progressively updated. Documentation will be periodically edited and brought in line with a consistent standard by a human maintainer, particularly as project milestones are reached.
+#### Kubernetes Integration
+- **kubectl**: The standard Kubernetes command-line tool, pre-configured for cluster management
+- **helm**: Package manager for Kubernetes, making application deployment more manageable
+- **k9s**: A terminal-based UI for navigating your Kubernetes clusters with vim-like keybindings
 
-## Quick Start
+#### Container Orchestration
+- **podman-compose**: Local container orchestration compatible with Docker Compose files
+- Support for pods and multi-container applications
+- Integration with systemd for service management
 
-Get started building your core system in minutes:
+### Development Environment
 
-### Minimum Requirements
-- 4GB RAM (8GB recommended for better build performance)
-- 20GB free disk space
-- Docker or Podman installed
-- Git for cloning the repository
+The development environment is built around modern tools and workflows, with special attention to terminal productivity and container development:
 
-### Basic Build Steps
+#### Integrated Development Environment
+- **VS Code**: A full-featured IDE that serves as the primary development environment
+- Integrated terminal for seamless command-line operations
+- Git integration for version control
+- Pre-configured for container development with the necessary extensions
+- Remote development support for working with containers and remote hosts
+
+#### Terminal Environment
+- **Advanced Shell Setup**:
+- Zsh with oh-my-zsh for enhanced productivity
+- Custom prompt with git status integration
+- Powerful command completion and history features
+- Advanced terminal navigation with ranger file manager
+
+#### Modern CLI Tools
+- **JSON/YAML Processing**:
+- jq for JSON manipulation
+- yq for YAML processing
+- **Enhanced Alternatives**:
+- bat: A modern replacement for cat with syntax highlighting
+- exa: A modern ls alternative with git integration
+- ripgrep: Fast, recursive search tool
+- fd: User-friendly alternative to find
+
+#### Terminal Emulator Options
+We provide multiple terminal emulator options to suit different workflows:
+- **QTerminal**: The default LXQt terminal, lightweight and well-integrated
+- **Warp**: A modern terminal with IDE-like features (optional install)
+- AI-powered command suggestions
+- Blocks for command organization
+- Built-in SSH management
+
+Navigate to Terminal > Preferences to customize your terminal experience with:
+- Custom color schemes
+- Font settings
+- Keyboard shortcuts
+- Session management
+
+### Monitoring & Observability
+- **System Monitoring**:
+- Telegraf for metrics collection
+- Netdata for real-time performance monitoring
+- Grafana for visualization
+- **Container Monitoring**:
+- ctop for container metrics
+- cgroup-tools for resource management
+- **Logging**:
+- Consolidated logging with journald
+- Log analysis with goaccess
+- Advanced log viewing with multitail
+
+### Performance Testing
+- stress-ng for system load testing
+- Apache Bench (ab) for HTTP benchmarking
+- siege for HTTP load testing
+
+## Desktop Integration
+
+The desktop environment is optimized for development workflows while maintaining security through application containment:
+
+### Application Containerization
+- **Flatpak Integration**:
+- Sandboxed applications with minimal system access
+- Automatic updates and dependency management
+- Access to a wide range of development tools through Flathub
+- Reduced system footprint compared to Snap alternatives
+
+### Desktop Environment
+- **LXQt Optimization**:
+- Lightweight desktop focused on performance
+- Custom panel layout for development workflows
+- Quick launch shortcuts for common tools
+- System tray integration for resource monitoring
+
+### Monitoring & Status
+- System tray widgets for:
+- Container status and resource usage
+- Network connectivity
+- System resource monitoring
+- Update notifications
+
+### Backup & Recovery
+- Integrated backup tools for:
+- Container images and volumes
+- Development configurations
+- Project files
+- System settings
+- Quick recovery options for development environments
+- Integration with version control for configuration management
+
+## Getting Started
+
+### Initial Setup
+1. Boot into the live environment
+2. Configure your development environment:
 ```bash
-# 1. Clone the repository
-git clone [repository-url]
-cd secure-live-usb
+# Set up oh-my-zsh
+sh -c "$(curl -fsSL https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 
-# 2. Build the system
-./build.sh
+# Configure VS Code settings and extensions
+code --install-extension ms-azuretools.vscode-docker
 ```
 
-The build process typically takes 15-30 minutes depending on your system and internet connection. The resulting ISO will be available in the `build/` directory as `live-image-amd64.hybrid.iso`.
-
-### Quick Verification
-1. Use your preferred tool to write the ISO to a USB drive, or test in a virtual machine
-2. Boot the live system
-3. Verify core functionality:
-    - LXQt desktop environment loads
-    - Network management is available
-    - Basic security features are active (firewall, system hardening)
-
-For detailed information about customization, building specific spins, or advanced configuration, see:
-- [Build Instructions](#build-instructions)
-- [System Customization](#system-customization)
-- [Core Security Features](#core-security-features)
-
-## Architecture Overview
-
-The project uses a modular architecture consisting of:
-
-1. **Core System**
-- Lightweight LXQt desktop environment
-- Essential system utilities
-- Fundamental security hardening:
-    * Basic firewall configuration
-    * SSH hardening
-    * System control optimizations
-    * Password quality enforcement
-- Development essentials
-- Network configuration
-
-2. **Specialized Spins**
-- DevOps Environment (`migration/devops/`)
-    * Container runtime and orchestration
-    * Development environment and IDEs
-    * Monitoring and logging tools
-    * Performance testing utilities
-- Security/Forensics Tools (`migration/security/`)
-    * Network security analysis
-    * Forensics toolkit
-    * Intrusion detection
-    * Security monitoring
-
-Each spin extends the core system while maintaining a consistent base architecture and build process.
-
-## Prerequisites
-
-To build any spin image, you'll need either:
-- Docker
-OR
-- Podman
-
-No other dependencies are required as all build tools are contained within the builder image.
-
-## Project Structure
-
-```
-project-root/
-├── .gitignore                 # Git exclusions
-├── build.sh                   # Main build automation script
-├── build/                     # Build workspace (contents generated by live build system)
-├── Documentation/             # Technical reference documentation
-├── Dockerfile                 # Build environment definition
-├── overlay-includes.chroot/   # Core system overlay files
-│   ├── etc/                   # System and service modification drop-in unit files
-│   └── usr/local/sbin         # System and service modification scripts and binaries
-└── overlay-config/            # Core configuration files
-    ├── archives/              # Repository configurations
-    ├── hooks/                 # Build hook scripts
-    ├── includes/              # File inclusions
-    └── package-lists/         # Core package selections
-```
-
-** Important Note! The project is currently undergoing a migration from a single-branch, monolithic implementation to streamlined specializations, or "spins", that target the DevOps and Security/Forensics use cases documented above. Once the migration is complete, each will have its own dedicated project branch with both sharing a common core implementation merged from a dedicated Core implementation branch. DevOps- and security-specialized configurations are currently staged in a temporary `migration/` directory under the Core branch (this). Its contents will eventually be moved to their respective project branches. They have been left in the Core branch primarily as reference while the common system configuration refactoring is ongoing.
-
-```
-migration/                 # *Transitional temporary staging directory for the specialized configurations refactored out of the core implementation*
-├── devops/                       # DevOps spin
-│   ├── README.md                 # DevOps documentation
-│   ├── overlay-config/           # DevOps-specific configs
-│   └── overlay-includes.chroot   # DevOps-specific system configurations
-└── security/                     # Security spin
-    ├── README.md                 # Security documentation
-    ├── overlay-config/           # Security-specific configs
-    └── overlay-includes.chroot   # Security-specific system configurations
-```
-
-The `build/` directory serves as the main live-build working directory, containing all configuration and automation scripts needed to create the live image. While build artifacts themselves are excluded from version control, the directory structure and configuration files are tracked because they define how the system is constructed.
-
-This directory follows live-build's expected layout, with `auto/` containing build automation and `config/` holding the detailed configuration elements like package lists, hooks, and file overlays. Each subdirectory serves a specific purpose in the live-build process:
-
-- `auto/`: Contains scripts that automate the build process
-- `config/`: Holds all configuration elements divided by purpose
-- `package-lists/`: Defines what packages are installed
-- `hooks/`: Scripts that run at different build stages
-- `includes.chroot/`: Files to include in the final system
-- `apt/`: APT sources and preferences configuration
-
-**Note**: While build artifacts (ISOs, caches, etc.) are excluded via .gitignore, the configuration within build/ is essential and version controlled. This ensures build reproducibility while keeping the repository size manageable.
-
-## Containerized Build Environment
-
-This project uses a containerized build environment to ensure consistent and reproducible builds across different systems. The build container includes all necessary dependencies and tools (live-build, debootstrap, etc.) preconfigured for building Debian-based live images.
-
-The build process is orchestrated through three main components:
-1. The `build.sh` script automates container creation and management, handling:
-- Container runtime detection (Podman/Docker)
-- Directory mounting and permissions
-- Build environment setup
-- Volume management for live-build
-2. The `Dockerfile` defines the build environment with all required tools
-3. The `overlay-includes.chroot/` directory contains system files and configurations that get overlaid into the chroot environment during build
-
-These components work together to create a reproducible build environment where:
-- The container provides isolation and dependency management
-- System overlays from overlay-includes.chroot/ are consistently applied
-- The build process is automated and reproducible
-- All components are version controlled for consistency
-
-Benefits of the containerized approach:
-- Consistent build environment across different systems
-- Isolated dependencies that don't affect the host system
-- Reproducible builds
-- Easy setup without installing multiple system packages
-- Versioned build environment that can be tracked with the project
-
-## Overlay Configuration Management
-
-The `overlay-config/` directory preserves our overlay configurations separate from the build/config directory
-
-### Overlay Configuration Structure
-
-The `overlay-config/` directory contains several subdirectories containing security and DevOps-focused enhancements.
-- `archives/`: Contains custom archive configurations
-    - VS Code repository configuration (vscode.list.chroot, vscode.key.chroot)
-
-- `hooks/`: Contains custom build hook scripts
-    - Custom hooks in live/
-        - 0020-configure-zram.hook.chroot: Configures ZRAM for optimized memory management
-        - 0100-install-vscode-extensions.chroot: Manages VS Code extension installation
-    - Standard hooks from live-build (symlinked from /usr/share/live/build/hooks/)
-
-- `package-lists/`: Defines our custom package selections
-    - core-desktop.list.chroot: LXQt desktop environment and applications
-    - core-file-utils.list.chroot: Essential file management utilities
-    - core-text-utils.list.chroot: Text processing tools
-    - core-network.list.chroot: Basic networking utilities
-    - core-monitoring.list.chroot: Basic system monitoring tools
-    - core-containers.list.chroot: Minimal container support
-
-During the build process, these overlay configurations are copied into the appropriate locations in the build/config directory after running `lb config`. This ensures our configurations are preserved while allowing us to safely regenerate the base configuration as needed.
-
-The `planned/` directory contains specifications and prototype implementations for future enhancements. This includes the TODO.md file detailing planned features and improvements, as well as directories containing preliminary work on specific features that are slated for future integration. This organization helps track and manage the project's planned evolution while keeping work-in-progress separate from the current stable implementation.
-
-Additional placeholder directories are provided for user customizations:
-
-- `apt/`: For custom APT preferences and configurations
-    - Add custom APT pinning configurations
-    - Configure APT sources and preferences
-
-- `packages.chroot/`: For custom .deb packages
-    - Place locally built or custom .deb packages here
-    - These will be installed during image build
-
-- `rootfs/`: For custom root filesystem overlays
-    - Add files that need to be placed in specific locations
-    - Maintains the same directory structure as the target system
-
-- `bootloaders/`: For custom bootloader configurations
-    - Custom GRUB configurations
-    - Boot splash screen customizations
-    - Bootloader theme files
-
-- `includes.chroot/`: For files to be copied into the chroot
-    - Files to be included in the final system
-    - Maintains target system directory structure
-
-- `includes.binary/`: For files to be copied into the binary image
-    - Files needed at boot time
-    - Content for the bootable media structure
-
-## Build Instructions
-
-1. Clone this repository
-
-2. Build the builder container:
+### Container Operations
 ```bash
-# The script will automatically use Podman if available, otherwise Docker
-./build.sh
+# Initialize podman
+podman system reset
+podman login docker.io
 
-# To explicitly use Docker instead of Podman
-./build.sh --override-manager Docker
+# Pull and run a container
+podman pull docker.io/library/alpine
+podman run -it alpine sh
 ```
 
-The resulting ISO will be created in the `build/` directory.
+### Development Workflow
+1. Use VS Code for primary development
+2. Leverage integrated terminal with zsh
+3. Utilize container tools for testing
+4. Monitor system resources via built-in tools
 
-### Build Script Details
+## Additional Resources
+- [Podman Documentation](https://docs.podman.io/)
+- [VS Code Docs](https://code.visualstudio.com/docs)
+- [Kubernetes Documentation](https://kubernetes.io/docs/)
 
-The `build.sh` script handles the container management and build process:
+## Support
+For issues and feature requests, please check the issue tracker in the main repository.
 
-- Automatically detects available container managers (Podman or Docker)
-- Defaults to Podman if both are available for better security
-- Can be forced to use Docker with `--use-docker` flag (Docker required, ignored with a warning if not available)
-- Creates needed directories automatically
-- Handles SELinux contexts when using Podman
-- Mounts the overlay-includes.chroot/ directory as the includes.chroot location for filesystem overlays
-
-Note: The build container requires privileged mode due to the nature of creating filesystem images and handling loop devices during the live image build process.
-
-## System Customization
-
-This project uses Debian live-build's standard customization mechanisms with modifications to accommodate the automation of the build process targeting a customized image.
-
-### Configuration Structure
-
-- `build/auto/config`: Defines the base configuration and build parameters
-- `overlay-config/archives`: Contains drop-in non-Debian repository information, including repo addresses and GPG keys
-- `overlay-config/hooks`: Contains scripts that are executed during different phases of the build process
-- `overlay-config/package-lists/`: Lists of packages to be installed
-- `build/config/apt/`: APT configuration and preferences
-
-### Customization Methods
-
-1. **Package Selection**: Define required packages in package lists
-2. **Configuration Files**: Place custom configurations in `build/config/includes.chroot/`
-3. **Build Hooks**: Implement custom scripts for complex modifications
-4. **APT Sources**: Configure additional repositories as needed
-
-All modifications are version controlled, providing clear tracking of changes and enabling collaborative development.
-
-## Core Security Features
-
-We've built this system with a "security-first, performance-aware" philosophy. Our approach combines robust security measures with carefully tuned performance optimizations, ensuring that protection doesn't come at the cost of usability. From kernel-level safeguards to user-space controls, each security layer is designed to work together seamlessly while maintaining responsive system performance. Think of it as having a well-trained security team that's also an efficiency expert - keeping you safe while keeping things running smoothly.
-
-The core system implements comprehensive security hardening measures focused on establishing a secure foundation. We provide a comprehensive overview of the changes we've made in the following sections.
-
-### System Hardening
-- **Firewall Configuration**: Basic nftables ruleset for network protection
-- **SSH Hardening**: Secure OpenSSH configuration with:
-    * Strong cipher preferences
-    * Disabled root login
-    * Key-based authentication requirements
-- **System Controls**: Optimized kernel parameters for security:
-    * Network stack hardening
-    * Memory protection features
-    * Resource limits
-- **Authentication & Passwords**:
-    * PAM configuration for secure authentication
-    * Password quality requirements
-    * Login attempt limits
-- **Base System Security**:
-    * Secure file permissions
-    * Service minimization
-    * User session security
-
-### Device Mount Security
-- **Automatic Mount Prevention**:
-    * UDisks2 configuration to prevent automatic mounting
-    * udev rules to block automatic device handling
-    * Boot-time safety mechanisms for Live USB operation
-- **Mount Option Hardening**:
-    * Enforced noexec and nosuid options
-    * Explicit user interaction requirement
-    * Hidden internal device presentation
-
-### Kernel-level Protection
-- **Memory Security**:
-    * Address space randomization (ASLR)
-    * Kernel pointer restrictions
-    * Memory access controls
-    * Protected shared memory segments
-- **Process Security**:
-    * Process isolation mechanisms
-    * Restricted debugging capabilities
-    * Resource boundary enforcement
-    * BPF security controls
-
-### Network Hardening
-- **TCP/IP Security**:
-    * SYN flood protection
-    * Network redirect prevention
-    * Source routing restrictions
-    * Connection backlog controls
-- **Performance Optimization**:
-    * TCP buffer tuning
-    * Connection handling optimization
-    * Socket parameter configuration
-    * Network stack efficiency
-
-### Live Environment Optimizations
-- **Resource Management**:
-    * Dynamic cache pressure control
-    * Optimized swap configuration
-    * Memory allocation tuning
-    * I/O subsystem optimization
-- **Performance Tuning**:
-    * Process scheduling optimization
-    * File system access efficiency
-    * Resource limit balancing
-    * Boot-time safety mechanisms
-
-The system maintains a careful balance between security and performance through modular configuration files and adaptive tuning mechanisms. Each security feature and performance optimization can be customized for specific use cases while maintaining core security principles.
-
-## Memory Management
-
-This distribution implements an adaptive ZRAM-based memory management system that optimizes memory usage based on available system resources.
-
-### ZRAM Configuration
-
-The system uses a dynamic ZRAM configuration that adapts to the host system's available RAM:
-
-#### Adaptive Sizing Strategy
-- **Systems with 8GB RAM or less**:
-  - ZRAM Size: 25% of total RAM
-  - Swappiness: 80 (conservative)
-  - Example (8GB system):
-    - Physical RAM: 8GB
-    - ZRAM: 2GB
-    - Effective additional memory: ~6GB (with compression)
-
-- **Systems with more than 8GB RAM**:
-  - ZRAM Size: 50% of total RAM
-  - Swappiness: 100 (aggressive)
-  - Example (16GB system):
-    - Physical RAM: 16GB
-    - ZRAM: 8GB
-    - Effective additional memory: ~24GB (with compression)
-
-#### Technical Implementation
-- **Compression Algorithm**: zstd (optimal balance of speed and compression)
-- **Swap Priority**: -10 (ensures ZRAM is used before disk swap)
-- **Cache Pressure**: 50 (balanced cache management)
-- **Automatic Configuration**: Implemented via systemd service
-- **Runtime Detection**: Automatically determines optimal settings at boot
-
-## Build Instructions
-
-To build different variants of the system, check out the appropriate branch first:
-
-```bash
-# For the core system (main branch)
-git checkout main
-./build.sh
-
-# For the DevOps variant
-git checkout devops
-./build.sh
-
-# For the Security variant
-git checkout security
-./build.sh
-```
-
-The resulting ISO will be created in the `build/` directory.
-
-## Documentation
-
-- [Core System Documentation](Documentation/)
-
-For spin-specific documentation, refer to the README.md's and visit the `Documentation/` directories of the relevant branch(es).
-
-## For Contributors
-
-This repository tracks only configuration files and scripts. Build artifacts and the source image are excluded via .gitignore.
-
-When contributing:
-1. Determine if your change applies to:
-- Core system
-- Specific spin
-- Build infrastructure
-2. Create an appropriately named branch:
-```bash
-# For core changes
-git checkout -b core/feature-name
-
-# For spin-specific changes
-git checkout -b spin/devops/feature-name
-git checkout -b spin/security/feature-name
-
-# For build system changes
-git checkout -b build/feature-name
-```
-
-Use pull requests and include testing notes especially for spin-specific changes.

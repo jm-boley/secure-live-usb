@@ -1,105 +1,80 @@
-# Core Infrastructure Tasks
+# DevOps Spin - Planned Enhancements
 
-> Note: Data persistence features are now managed as separate subprojects:
-> - Standard persistence: See `planned/standard-persistence.md`
-> - Spin-specific persistence: See respective spin documentation
+## Container Runtime and Persistence
+- [ ] **Container State Management**
+- Implement persistent storage for container images and volumes
+- Design state tracking for container configurations
+- Add local registry caching mechanism
+- Document container state persistence architecture
 
-## High Priority
+- [ ] **Container Security and Hardening**
+- Configure SELinux/AppArmor profiles for container runtime
+- Implement container resource limits
+- Add container network isolation policies
+- Establish container signing and verification
 
-### User Configuration Script (configure-user.sh)
-- Implement secure username/password input handling
-- Add input validation for:
-    - Username format and length
-    - Password complexity
-    - System username conflicts
-- Implement template variable replacement ({{user}}, {{uid}}, {{gid}}, etc.)
-- Implement secure password hashing
-- Add system file updates with validation
-- Add home directory creation with proper permissions
-- Implement dependency checking on graft_delta.sh
+## CI/CD Infrastructure
+- [ ] **Build Environment Enhancement**
+- Create reproducible build containers
+- Implement multi-stage build optimization
+- Add caching layers for faster rebuilds
+- Establish build artifact versioning
 
-### Build System Core
-- Add validation checks for critical configuration files
-- Implement --dry-run option for all scripts
-- Add verbose logging options
-- Implement file backup system
-- Add rollback capability for failed operations
+- [ ] **Integration Pipeline**
+- Set up GitLab CI/CD pipeline templates
+- Configure automated testing framework
+- Implement build status notifications
+- Add deployment verification steps
 
-## Repository Organization
+## Development Environment Security
+- [ ] **Git Security**
+- Implement commit signing requirements
+- Add pre-commit hooks for security checks
+- Configure sensitive data detection
+- Document secure Git workflow practices
 
-### Branch Migration Strategy
-- Implement Git worktree based approach for spin separation:
-    ```
-    # Create branches without switching
-    git branch devops
-    git branch security
-    
-    # Create separate worktrees
-    git worktree add ../devops-live-usb-devops devops
-    git worktree add ../devops-live-usb-security security
-    ```
-- Benefits:
-    - Direct organization of files in final locations
-    - Simultaneous work on multiple branches
-    - Independent testing of configurations
-    - Cleaner git history
-    - No cleanup of migration directories needed
+- [ ] **VSCode Hardening**
+- Configure workspace trust settings
+- Set up extension security policies
+- Implement remote development security
+- Add secure debugging configurations
 
-#### Implementation Steps
-- Create feature branches (devops, security)
-- Set up worktrees for each branch
-- Move current migration/{devops,security} content to respective worktrees
-- Test builds in each worktree
-- Remove worktrees after branch migration complete
-- Delete migration directory from main branch
+## Build System Improvements
+- [ ] **Build Process**
+- Optimize package selection scripts
+- Implement parallel build processes
+- Add build dependency caching
+- Improve error handling and reporting
 
-## Documentation
+- [ ] **Build Verification**
+- Add automated package list validation
+- Implement configuration testing
+- Create build comparison tools
+- Set up automated smoke tests
 
-### User Documentation
-- Enhance README.md with:
-    - Quick-start guide
-    - Troubleshooting section
-    - Links to spin-specific documentation
-- Add example configurations in delta/
-- Document version tagging strategy
+## Development Documentation
+- [ ] **Architecture Documentation**
+- Document build system architecture
+- Create container workflow guides
+- Add security implementation details
+- Document testing procedures
 
-### Documentation Reorganization
-- Implement hybrid documentation approach:
-    ```
-    Wiki/
-    ├── Technical References/
-    │   ├── Network Hardening Guide
-    │   └── Container Security Guide
-    ├── Best Practices/
-    │   ├── Network Security
-    │   └── Container Security
-    └── Implementation Examples/
-        ├── Network Configurations
-        └── Container Configurations
+- [ ] **Developer Guides**
+- Create quick start guides
+- Add troubleshooting documentation
+- Document best practices
+- Create contribution guidelines
 
-    Repo/
-    ├── docs/
-    │   ├── network-configs/
-    │   │   └── current-settings.md
-    │   └── container-configs/
-    │       └── default-policies.md
-    └── README.md (with wiki links)
-    ```
+## Monitoring and Metrics
+- [ ] **Development Metrics**
+- Implement build time tracking
+- Add resource usage monitoring
+- Create performance benchmarks
+- Set up metric collection and analysis
 
-#### Implementation Steps
-- Create wiki infrastructure and initial structure
-- Migrate existing technical references to wiki:
-    - Network Hardening Reference
-    - Container Security Reference
-- Extract version-specific configurations to repo
-- Update README.md with wiki links
-- Implement cross-referencing between repo docs and wiki
-- Review and migrate additional technical content as needed
+- [ ] **Quality Assurance**
+- Add code quality metrics
+- Implement test coverage tracking
+- Create performance regression tests
+- Set up automated review tools
 
-### Data Persistence
-- Implement standard persistence features:
-    - User data preservation
-    - System configuration backup
-    - State restoration tools
-- Create unified persistence documentation
-- Add recovery procedures guide
