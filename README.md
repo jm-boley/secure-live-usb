@@ -66,12 +66,12 @@ The project uses a modular architecture consisting of:
 - Network configuration
 
 2. **Specialized Spins**
-- DevOps Environment (`migration/devops/`)
+- DevOps Environment (`devops` branch)
     * Container runtime and orchestration
     * Development environment and IDEs
     * Monitoring and logging tools
     * Performance testing utilities
-- Security/Forensics Tools (`migration/security/`)
+- Security/Forensics Tools (`security` branch)
     * Network security analysis
     * Forensics toolkit
     * Intrusion detection
