@@ -1,105 +1,88 @@
-# Core Infrastructure Tasks
+# Security Spin Enhancement Plan
 
-> Note: Data persistence features are now managed as separate subprojects:
-> - Standard persistence: See `planned/standard-persistence.md`
-> - Spin-specific persistence: See respective spin documentation
+## Kernel and System Hardening
+- [ ] High: Configure enhanced kernel security parameters
+- Enable/optimize Kernel Self Protection features
+- Configure restrictive sysctl parameters
+- Implement kernel module signing
+- Set up secure boot parameters
+- [ ] High: Implement system-wide ASLR and DEP policies
+- [ ] Medium: Optimize resource limits and controls
+- Configure systemwide resource limits
+- Set up cgroup restrictions
+- Implement process accounting
 
-## High Priority
+## Authentication and Access Control
+- [ ] High: Implement PAM configuration hardening
+- Configure failed login attempt limits
+- Set up password complexity requirements
+- Enable 2FA where applicable
+- [ ] High: AppArmor profile development
+- Create custom profiles for critical system services
+- Implement network access controls
+- Set up confined user profiles
+- [ ] Medium: Role-based access control implementation
+- Define security levels and roles
+- Implement mandatory access controls
+- Set up audit logging for privilege escalation
 
-### User Configuration Script (configure-user.sh)
-- Implement secure username/password input handling
-- Add input validation for:
-    - Username format and length
-    - Password complexity
-    - System username conflicts
-- Implement template variable replacement ({{user}}, {{uid}}, {{gid}}, etc.)
-- Implement secure password hashing
-- Add system file updates with validation
-- Add home directory creation with proper permissions
-- Implement dependency checking on graft_delta.sh
+## Network Security
+- [ ] High: Network service hardening
+- Configure restrictive firewall rules
+- Implement intrusion detection
+- Set up network monitoring alerts
+- [ ] High: Secure network protocol enforcement
+- Disable legacy/insecure protocols
+- Configure TLS 1.3 requirements
+- Implement certificate validation
+- [ ] Medium: Network forensics tools integration
+- Add packet capture capabilities
+- Implement flow monitoring
+- Set up network baseline analysis
 
-### Build System Core
-- Add validation checks for critical configuration files
-- Implement --dry-run option for all scripts
-- Add verbose logging options
-- Implement file backup system
-- Add rollback capability for failed operations
-
-## Repository Organization
-
-### Branch Migration Strategy
-- Implement Git worktree based approach for spin separation:
-    ```
-    # Create branches without switching
-    git branch devops
-    git branch security
-    
-    # Create separate worktrees
-    git worktree add ../devops-live-usb-devops devops
-    git worktree add ../devops-live-usb-security security
-    ```
-- Benefits:
-    - Direct organization of files in final locations
-    - Simultaneous work on multiple branches
-    - Independent testing of configurations
-    - Cleaner git history
-    - No cleanup of migration directories needed
-
-#### Implementation Steps
-- Create feature branches (devops, security)
-- Set up worktrees for each branch
-- Move current migration/{devops,security} content to respective worktrees
-- Test builds in each worktree
-- Remove worktrees after branch migration complete
-- Delete migration directory from main branch
+## File System and Process Security
+- [ ] High: Implement secure mount options
+- Configure noexec, nosuid for sensitive mounts
+- Set up encrypted storage options
+- Implement secure /tmp handling
+- [ ] High: File integrity monitoring
+- Configure AIDE database
+- Set up real-time change detection
+- Implement audit logging for critical files
+- [ ] High: Granular access control for sensitive directories
+- Create and configure analysts group
+- Implement ACLs for /home, /root, /run/user
+- Set up access management for security tools
+- Configure inheritance and default permissions
+- [ ] Medium: Process isolation enhancement
+- Configure namespaces for critical services
+- Implement seccomp filters
+- Set up process confinement policies
+## Monitoring and Auditing
+- [ ] High: System audit configuration
+- Set up comprehensive audit rules
+- Configure audit log management
+- Implement audit reporting
+- [ ] High: Security event monitoring
+- Configure intrusion detection alerts
+- Set up log analysis tools
+- Implement security dashboard
+- [ ] Medium: Performance impact monitoring
+- Monitor security measure overhead
+- Implement resource usage tracking
+- Set up performance baselines
 
 ## Documentation
+- [ ] High: Security hardening documentation
+- Document configuration rationale
+- Create implementation guides
+- Maintain security best practices
+- [ ] Medium: Incident response documentation
+- Create response playbooks
+- Document investigation procedures
+- Set up reporting templates
+- [ ] Low: Training materials
+- Create security tool guides
+- Document forensics procedures
+- Maintain threat hunting guides
 
-### User Documentation
-- Enhance README.md with:
-    - Quick-start guide
-    - Troubleshooting section
-    - Links to spin-specific documentation
-- Add example configurations in delta/
-- Document version tagging strategy
-
-### Documentation Reorganization
-- Implement hybrid documentation approach:
-    ```
-    Wiki/
-    ├── Technical References/
-    │   ├── Network Hardening Guide
-    │   └── Container Security Guide
-    ├── Best Practices/
-    │   ├── Network Security
-    │   └── Container Security
-    └── Implementation Examples/
-        ├── Network Configurations
-        └── Container Configurations
-
-    Repo/
-    ├── docs/
-    │   ├── network-configs/
-    │   │   └── current-settings.md
-    │   └── container-configs/
-    │       └── default-policies.md
-    └── README.md (with wiki links)
-    ```
-
-#### Implementation Steps
-- Create wiki infrastructure and initial structure
-- Migrate existing technical references to wiki:
-    - Network Hardening Reference
-    - Container Security Reference
-- Extract version-specific configurations to repo
-- Update README.md with wiki links
-- Implement cross-referencing between repo docs and wiki
-- Review and migrate additional technical content as needed
-
-### Data Persistence
-- Implement standard persistence features:
-    - User data preservation
-    - System configuration backup
-    - State restoration tools
-- Create unified persistence documentation
-- Add recovery procedures guide
