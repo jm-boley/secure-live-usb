@@ -107,20 +107,6 @@ project-root/
     └── package-lists/         # Core package selections
 ```
 
-** Important Note! The project is currently undergoing a migration from a single-branch, monolithic implementation to streamlined specializations, or "spins", that target the DevOps and Security/Forensics use cases documented above. Once the migration is complete, each will have its own dedicated project branch with both sharing a common core implementation merged from a dedicated Core implementation branch. DevOps- and security-specialized configurations are currently staged in a temporary `migration/` directory under the Core branch (this). Its contents will eventually be moved to their respective project branches. They have been left in the Core branch primarily as reference while the common system configuration refactoring is ongoing.
-
-```
-migration/                 # *Transitional temporary staging directory for the specialized configurations refactored out of the core implementation*
-├── devops/                       # DevOps spin
-│   ├── README.md                 # DevOps documentation
-│   ├── overlay-config/           # DevOps-specific configs
-│   └── overlay-includes.chroot   # DevOps-specific system configurations
-└── security/                     # Security spin
-    ├── README.md                 # Security documentation
-    ├── overlay-config/           # Security-specific configs
-    └── overlay-includes.chroot   # Security-specific system configurations
-```
-
 The `build/` directory serves as the main live-build working directory, containing all configuration and automation scripts needed to create the live image. While build artifacts themselves are excluded from version control, the directory structure and configuration files are tracked because they define how the system is constructed.
 
 This directory follows live-build's expected layout, with `auto/` containing build automation and `config/` holding the detailed configuration elements like package lists, hooks, and file overlays. Each subdirectory serves a specific purpose in the live-build process:
