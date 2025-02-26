@@ -1,0 +1,46 @@
+# =============================================================================
+# Python runtime security configuration template
+# =============================================================================
+# This template provides security settings for Python runtime environments.
+# Settings control module access, runtime behavior, and logging configurations.
+#
+# Usage:
+# 1. Copy this template to /etc/python/security.conf
+# 2. Review and adjust settings based on variant requirements
+# 3. Ensure REQUIRED settings are properly configured
+# =============================================================================
+
+# REQUIRED: Python Environment Settings
+# Rationale: Controls core runtime security behaviors
+[Environment]
+PYTHONHASHSEED = random
+PYTHONMALLOC = malloc_debug
+PYTHONASYNCIODEBUG = 0
+PYTHONFAULTHANDLER = 1
+PYTHONDEVMODE = 1
+
+# REQUIRED: Module Import Restrictions
+# Rationale: Prevents loading of potentially dangerous modules
+[ImportRestrictions]
+# List of modules that should never be imported
+denied_modules = os.system,subprocess.call,subprocess.run,pickle,marshal
+
+# OPTIONAL: Allowed Import Paths
+# Rationale: Restricts module imports to specific directories
+allowed_paths = /usr/lib/python3/dist-packages:/usr/local/lib/python3
+
+# REQUIRED: Logging Configuration
+# Rationale: Ensures proper audit trail of Python operations
+[Logging]
+log_level = INFO
+audit_events = 1
+log_format = %(asctime)s - %(name)s - %(levelname)s - %(message)s
+log_file = /var/log/python/security.log
+
+# OPTIONAL: Resource Limits
+# Rationale: Prevents resource exhaustion attacks
+[ResourceLimits]
+max_memory = 1G
+stack_size = 8M
+max_frames = 1000
+

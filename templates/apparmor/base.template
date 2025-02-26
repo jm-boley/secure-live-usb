@@ -1,0 +1,67 @@
+# [REQUIRED]
+# Base AppArmor profile template for system services and applications
+# This template defines common rules and abstractions that should be included
+# in specific application profiles.
+
+# ===================================================================
+# Common Includes & Abstractions
+# ===================================================================
+# [REQUIRED] Basic Linux system functionality
+#include <tunables/global>
+#include <abstractions/base>
+#include <abstractions/nameservice>
+
+# [OPTIONAL] Additional system abstractions based on needs
+# Enable based on application requirements:
+##include <abstractions/user-tmp>          # Temp file access
+##include <abstractions/authentication>    # Auth system access
+##include <abstractions/dbus-strict>       # D-Bus access
+
+# ===================================================================
+# Base Capabilities 
+# ===================================================================
+# [REQUIRED] Minimum capabilities for service operation
+capability net_bind_service,     # Allow binding to ports
+capability setuid,               # Allow setuid operations
+capability setgid,               # Allow setgid operations
+
+# [OPTIONAL] Additional capabilities
+# Enable only if specifically required:
+#capability sys_ptrace,      # Process tracing
+#capability sys_admin,       # System administration
+
+# ===================================================================
+# Standard File Access Rules
+# ===================================================================
+# [REQUIRED] Basic system access
+/                    r,      # Root directory read
+/proc/               r,      # Process info read
+/proc/sys/kernel/hostname r, # Hostname read
+
+# [REQUIRED] Application runtime
+owner @{PROC}/@{pid}/stat   r,
+owner @{PROC}/@{pid}/status r,
+
+# [OPTIONAL] Logging (adjust paths as needed)
+owner /var/log/*      w,
+
+# ===================================================================
+# Network Access Template
+# ===================================================================
+# [REQUIRED] Basic network operations
+network inet stream,
+network inet6 stream,
+
+# [OPTIONAL] Additional protocols
+#network netlink raw,
+#network packet raw,
+
+# ===================================================================
+# Documentation Notes:
+# ===================================================================
+# 1. Always enable the minimum required capabilities
+# 2. Document any additional capabilities in variant config
+# 3. Test profiles in complain mode before enforcing
+# 4. Use owner match when possible for tighter security
+# 5. Consider audit rules for sensitive operations
+

@@ -1,0 +1,149 @@
+# Network Security Configuration Template
+# ======================================
+#
+# This template provides baseline network security configurations that can be
+# applied across different system variants. Settings are marked as:
+#
+# [REQUIRED] - Must be implemented in all variants
+# [OPTIONAL] - May be adjusted based on specific variant needs
+#
+# Each section includes:
+# - Purpose and security implications
+# - Default values and recommended settings
+# - Variant-specific considerations
+# - Dependencies and related configurations
+
+#######################
+# TCP/IP Stack Hardening
+#######################
+
+# === SYN Flood Protection ===
+[REQUIRED]
+net.ipv4.tcp_syncookies = 1
+# Enables TCP SYN cookies to protect against SYN flood attacks
+# Security implications: Helps prevent resource exhaustion from SYN flood attacks
+# Notes: No significant impact on normal operations
+
+[REQUIRED]
+net.ipv4.tcp_max_syn_backlog = 2048
+# Sets SYN backlog queue size
+# Security implications: Larger queue helps handle legitimate connection bursts
+# DevOps consideration: May need to increase for high-traffic services
+
+# === ICMP Security ===
+[REQUIRED]
+net.ipv4.icmp_echo_ignore_broadcasts = 1
+# Prevents responses to broadcast ICMP echo requests
+# Security implications: Prevents smurf attacks and network discovery
+
+[OPTIONAL]
+net.ipv4.icmp_ignore_bogus_error_responses = 1
+# Ignores malformed ICMP error responses
+# Security implications: Reduces exposure to malicious ICMP traffic
+
+# === Path MTU Discovery ===
+[OPTIONAL]
+net.ipv4.ip_no_pmtu_disc = 0
+# Enables Path MTU Discovery
+# DevOps consideration: May need to disable if causing connectivity issues
+# Security consideration: Helps prevent fragmentation-based attacks
+
+# === TCP Timestamps ===
+[OPTIONAL]
+net.ipv4.tcp_timestamps = 0
+# Disables TCP timestamps
+# Security implications: Prevents system uptime leakage
+# Performance impact: May affect TCP performance on some networks
+
+#######################
+# Interface Security
+#######################
+
+# === Reverse Path Filtering ===
+[REQUIRED]
+net.ipv4.conf.all.rp_filter = 1
+net.ipv4.conf.default.rp_filter = 1
+# Enables source validation of received packets
+# Security implications: Prevents IP spoofing attacks
+# DevOps consideration: May need exceptions for complex routing
+
+# === ARP Security ===
+[REQUIRED]
+net.ipv4.conf.all.arp_ignore = 1
+# Restricts which ARP requests the system responds to
+# Security implications: Reduces ARP-based reconnaissance
+
+[REQUIRED]
+net.ipv4.conf.all.arp_announce = 2
+# Uses best local address for ARP announcements
+# Security implications: Improves network stability and security
+
+#######################
+# Protocol Security
+#######################
+
+# === IPv6 Security ===
+[REQUIRED]
+net.ipv6.conf.all.accept_redirects = 0
+net.ipv6.conf.default.accept_redirects = 0
+# Disables IPv6 ICMP redirects
+# Security implications: Prevents redirect-based attacks
+
+[REQUIRED]
+net.ipv6.conf.all.accept_ra = 0
+# Disables router advertisements
+# Security implications: Prevents rogue router attacks
+# DevOps consideration: May need = 2 for stateless autoconfiguration
+
+# === TCP/UDP Hardening ===
+[REQUIRED]
+net.ipv4.tcp_sack = 0
+# Disables selective ACK
+# Security implications: Prevents SACK-based attacks
+# Performance impact: May affect throughput on some networks
+
+[OPTIONAL]
+net.ipv4.tcp_dsack = 0
+# Disables duplicate selective ACK
+# Security implications: Further reduces attack surface
+
+#######################
+# DoS Prevention
+#######################
+
+# === Connection Tracking ===
+[REQUIRED]
+net.netfilter.nf_conntrack_max = 524288
+# Sets maximum connection tracking entries
+# DevOps consideration: Adjust based on expected connections
+# Security implications: Prevents resource exhaustion
+
+[REQUIRED]
+net.netfilter.nf_conntrack_tcp_timeout_established = 3600
+# Sets timeout for established connections
+# Security implications: Helps prevent connection table exhaustion
+
+# === Resource Controls ===
+[REQUIRED]
+net.ipv4.tcp_fin_timeout = 30
+# Reduces FIN timeout period
+# Security implications: Faster cleanup of closed connections
+
+[OPTIONAL]
+net.ipv4.tcp_max_tw_buckets = 1440000
+# Limits TIME_WAIT buckets
+# DevOps consideration: May need increase for high-connection services
+# Security implications: Prevents resource exhaustion attacks
+
+# Configuration Notes:
+# 1. All [REQUIRED] settings should be implemented as-is
+# 2. [OPTIONAL] settings may be adjusted based on specific needs
+# 3. Additional variant-specific settings should be added in separate files
+# 4. Monitor system logs after applying changes
+# 5. Test thoroughly in non-production environment first
+
+# Related Files:
+# - nftables ruleset
+# - systemd-networkd configuration
+# - interface configuration files
+

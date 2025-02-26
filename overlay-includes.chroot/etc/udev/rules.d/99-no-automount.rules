@@ -1,0 +1,34 @@
+# Security Configuration: Prevent Automatic Device Mounting
+#
+# Purpose:
+# - Disable automatic mounting and handling of removable storage devices
+# - Require explicit user action to mount devices
+# - Prevent automated exploitation of vulnerable mount handlers
+#
+# Security Benefits:
+# - Prevents BadUSB attacks that rely on automatic device handling
+# - Blocks malicious devices from auto-executing payloads
+# - Reduces attack surface from corrupted filesystems
+# - Gives users control over device mounting decisions
+#
+# Protection Mechanisms:
+# 1. Prevents automatic loading of device handlers
+# 2. Disables automatic mounting for all storage types
+# 3. Forces manual mounting through proper user tools
+# 4. Includes boot-time safety check
+#
+# Note: Rules include TEST!="/run/.containerboot" to ensure they don't
+# interfere with the live system boot process
+
+# Block automatic handling of all USB storage devices
+ACTION=="add", SUBSYSTEMS=="usb", ENV{ID_USB_INTERFACES}=="*:08*", TEST!="/run/.containerboot", ENV{UDISKS_AUTO}="0"
+
+# Block automounting for all removable drives
+ACTION=="add", SUBSYSTEMS=="block", ENV{ID_FS_USAGE}=="filesystem", TEST!="/run/.containerboot", ENV{UDISKS_AUTO}="0"
+
+# Prevent automatic handling of optical drives
+ACTION=="add", SUBSYSTEM=="block", ENV{ID_CDROM}=="1", TEST!="/run/.containerboot", ENV{UDISKS_AUTO}="0"
+
+# Block automatic mounting of SD cards and MMC storage
+ACTION=="add", SUBSYSTEMS=="block", ENV{ID_DRIVE_FLASH_SD}=="1", TEST!="/run/.containerboot", ENV{UDISKS_AUTO}="0"
+ACTION=="add", SUBSYSTEMS=="block", ENV{ID_DRIVE_FLASH_MMC}=="1", TEST!="/run/.containerboot", ENV{UDISKS_AUTO}="0"

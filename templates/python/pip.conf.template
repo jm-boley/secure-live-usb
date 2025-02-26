@@ -1,0 +1,48 @@
+# =============================================================================
+# Global pip configuration template for security-hardened environments
+# =============================================================================
+# This template provides security-focused pip configurations that apply across
+# different system variants. Settings are marked as REQUIRED or OPTIONAL based
+# on their security importance.
+#
+# Usage:
+# 1. Copy this template to /etc/pip.conf
+# 2. Modify settings according to your variant's requirements
+# 3. Ensure all REQUIRED settings are configured
+# =============================================================================
+
+[global]
+# REQUIRED: Force pip to use HTTPS for package downloads
+# Rationale: Prevents package tampering and man-in-the-middle attacks
+index-url = https://pypi.org/simple
+only-binary = :all:
+
+# REQUIRED: Enable hash checking for all package installations
+# Rationale: Ensures package integrity and prevents supply chain attacks
+require-hashes = true
+
+# OPTIONAL: Disable installing from local source directories
+# Rationale: Prevents execution of untrusted local code
+no-cache-dir = true
+disable-pip-version-check = true
+
+# OPTIONAL: Configure timeouts for network operations
+# Rationale: Prevents hanging on slow/malicious mirrors
+timeout = 60
+retries = 3
+
+[install]
+# REQUIRED: Prevent pip from installing packages as scripts
+# Rationale: Reduces attack surface from malicious entry points
+no-warn-script-location = false
+no-input = true
+
+# OPTIONAL: Configure trusted hosts (if needed)
+# Rationale: Explicit allowlist for internal/trusted package sources
+# trusted-host = your-internal-pypi.example.com
+
+[search]
+# REQUIRED: Force index searches to use HTTPS
+# Rationale: Prevents information leakage
+index = https://pypi.org/pypi
+

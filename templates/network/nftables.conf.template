@@ -1,0 +1,156 @@
+#!/usr/bin/nft -f
+
+# REQUIRED: Flush existing ruleset
+flush ruleset
+
+# REQUIRED: Define variables for common services and interfaces
+# These can be customized based on specific requirements
+define wan_if = eth0     # Default WAN interface
+define lan_if = eth1     # Default LAN interface
+
+# REQUIRED: Common service ports
+# NOTE: Add additional service definitions as needed for your use case
+define http_ports = { 80, 443 }            # HTTP/HTTPS
+define dns_tls_port = 853                  # DNS-over-TLS
+define dhcp_ports = { 67, 68 }             # DHCP client/server
+define icmp_types_ipv4 = { echo-request, echo-reply, destination-unreachable, time-exceeded }
+define icmp_types_ipv6 = { echo-request, echo-reply, nd-neighbor-solicit, nd-neighbor-advert, nd-router-advert, destination-unreachable, packet-too-big, time-exceeded, parameter-problem }
+
+# REQUIRED: Base tables and chains
+table inet filter {
+    # Basic chains with policies
+    chain input {
+        type filter hook input priority 0; policy drop;
+
+        # REQUIRED: Connection tracking base rules
+        ct state invalid drop comment "Drop invalid connections"
+        ct state established,related accept comment "Accept established connections"
+
+        # REQUIRED: Accept loopback
+        iifname "lo" accept comment "Accept loopback traffic"
+
+        # REQUIRED: Anti-spoofing rules
+        iifname $wan_if ip saddr { 127.0.0.0/8, 192.168.0.0/16, 172.16.0.0/12, 10.0.0.0/8 } drop comment "Drop private IP spoofing"
+        iifname $wan_if ip6 saddr ::1 drop comment "Drop IPv6 localhost spoofing"
+
+        # REQUIRED: Basic ICMP handling
+        ip protocol icmp icmp type $icmp_types_ipv4 limit rate 10/second accept comment "Rate-limited ICMPv4"
+        ip6 nexthdr icmpv6 icmpv6 type $icmp_types_ipv6 limit rate 10/second accept comment "Rate-limited ICMPv6"
+
+        # REQUIRED: DHCP client
+        udp dport $dhcp_ports accept comment "Accept DHCP"
+
+        # OPTIONAL: Add custom rules below
+        # Example: Allow SSH access
+        # tcp dport 22 accept comment "Accept SSH"
+
+        # REQUIRED: Policy logging
+        limit rate 3/minute log prefix "IN-DROP: " comment "Log dropped input"
+    }
+
+    chain forward {
+        type filter hook forward priority 0; policy drop;
+
+        # REQUIRED: Connection tracking base rules
+        ct state invalid drop comment "Drop invalid connections"
+        ct state established,related accept comment "Accept established connections"
+
+        # REQUIRED: Policy logging
+        limit rate 3/minute log prefix "FWD-DROP: " comment "Log dropped forward"
+    }
+
+    chain output {
+        type filter hook output priority 0; policy drop;
+
+        # REQUIRED: Connection tracking
+        ct state invalid drop comment "Drop invalid connections"
+        ct state established,related accept comment "Accept established connections"
+
+        # REQUIRED: Allow loopback
+        oifname "lo" accept comment "Accept loopback traffic"
+
+        # REQUIRED: Allow basic outbound services
+        tcp dport $http_ports ct state new accept comment "Allow outbound HTTP/HTTPS"
+        tcp dport $dns_tls_port ct state new accept comment "Allow outbound DNS-over-TLS"
+        udp dport $dhcp_ports ct state new accept comment "Allow outbound DHCP"
+
+        # REQUIRED: Allow essential ICMP
+        ip protocol icmp icmp type $icmp_types_ipv4 accept comment "Allow outbound ICMPv4"
+        ip6 nexthdr icmpv6 icmpv6 type $icmp_types_ipv6 accept comment "Allow outbound ICMPv6"
+
+        # OPTIONAL: Add custom outbound rules below
+        # Example: Allow SSH
+        # tcp dport 22 ct state new accept comment "Allow outbound SSH"
+
+        # REQUIRED: Policy logging
+        limit rate 3/minute log prefix "OUT-DROP: " comment "Log dropped output"
+    }
+}
+
+# Documentation:
+# 1. Adding New Services
+#    - Define new service ports at the top of the file
+#    - Add corresponding rules in input/output chains as needed
+#    - Always use connection tracking for stateful rules
+#    - Include clear comments explaining the purpose
+#
+# 2. Security Implications
+#    - Default drop policy ensures unknown traffic is blocked
+#    - Connection tracking prevents unauthorized connections
+#    - Rate limiting prevents DoS attacks
+#    - Logging helps identify potential threats
+#    - Anti-spoofing rules prevent common attacks
+#
+# 3. Container/Virtualization Support
+#    WARNING: Advanced network features should only be enabled for specialized DevOps scenarios
+#
+#    Example NAT Table for Container Support:
+#    ```
+#    table ip nat {
+#        chain prerouting {
+#            type nat hook prerouting priority -100;
+#            # Container port forwarding examples:
+#            # tcp dport 8080 dnat to 172.16.0.2:80
+#        }
+#
+#        chain postrouting {
+#            type nat hook postrouting priority 100;
+#            # Container outbound NAT:
+#            # ip saddr 172.16.0.0/12 oifname "eth0" masquerade
+#        }
+#    }
+#    ```
+#
+#    Container-Specific Forward Chain Rules:
+#    ```
+#    chain forward {
+#        # Basic container network isolation:
+#        iifname "docker0" oifname "docker0" accept
+#        ip saddr 172.16.0.0/12 accept
+#        
+#        # Restrict container-to-host access:
+#        iifname "docker0" ip daddr 172.16.0.1 tcp dport { 53, 67, 68 } accept
+#        
+#        # Allow configured container services:
+#        iifname "eth0" ip daddr 172.16.0.2 tcp dport 80 accept
+#    }
+#    ```
+#
+#    Security Considerations:
+#    - Only enable NAT/routing if required for container operations
+#    - Use network namespaces to isolate container traffic
+#    - Implement strict container network policies
+#    - Monitor container network activity
+#    - Consider using dedicated interfaces for container traffic
+#
+# 4. Common Use Cases
+#    - Server: Add input rules for exposed services
+#    - Workstation: Add output rules for required services
+#    - Container Host: Enable container routing/NAT features
+#    - Security: Keep minimum required services, enhance logging
+#
+# 5. IPv6 Considerations
+#    - ICMPv6 rules allow essential neighbor discovery
+#    - Parallel IPv4/IPv6 service rules recommended
+#    - Consider IPv6 privacy extensions if needed
+#    - Apply container network isolation for IPv6 as well

@@ -49,11 +49,15 @@
 - Configure AIDE database
 - Set up real-time change detection
 - Implement audit logging for critical files
+- [ ] High: Granular access control for sensitive directories
+- Create and configure analysts group
+- Implement ACLs for /home, /root, /run/user
+- Set up access management for security tools
+- Configure inheritance and default permissions
 - [ ] Medium: Process isolation enhancement
 - Configure namespaces for critical services
 - Implement seccomp filters
 - Set up process confinement policies
-
 ## Monitoring and Auditing
 - [ ] High: System audit configuration
 - Set up comprehensive audit rules

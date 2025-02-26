@@ -1,0 +1,214 @@
+###############################################################################
+# System Hardening Configuration Template
+###############################################################################
+# This template provides baseline system hardening configurations for both
+# Security and DevOps variants. Each setting is marked as either:
+#   REQUIRED - Must be implemented for baseline security
+#   OPTIONAL - Can be adjusted based on specific variant needs
+#
+# Settings are grouped by security domain with detailed explanations
+# of their purpose and security implications.
+###############################################################################
+
+###############################################################################
+# 1. Kernel Module Security
+###############################################################################
+
+# [REQUIRED] Dangerous module blacklist
+# These modules have known security implications and should be disabled
+blacklist firewire-core  # Disable Firewire
+blacklist thunderbolt    # Disable Thunderbolt
+
+# [OPTIONAL] Development-related modules
+# Security variant: Keep all blacklisted for maximum security
+# DevOps variant: Consider enabling the following based on needs:
+#   - ftdi_sio: Required for USB-based development tools
+#   - usbserial: Required for Arduino/embedded development
+blacklist ftdi_sio       # USB serial converter
+blacklist usbserial      # USB serial converter framework
+
+# [REQUIRED] Module loading restrictions
+# Prevent runtime module loading after boot
+options modules.deny_new_usb=1  # Prevent new USB module loading
+options modules.sig_enforce=1   # Enforce module signature verification (non-USB)
+
+###############################################################################
+# 2. File System Security
+###############################################################################
+
+# [REQUIRED] Mount option defaults
+# Security-focused mount options for all filesystems
+mount_defaults {
+    noexec     # Prevent execution from non-system partitions
+    nosuid     # Prevent suid binaries from non-system partitions
+    nodev      # Prevent device files from non-system partitions
+    ro         # Read-only where possible
+}
+
+# [REQUIRED] Temporary filesystem restrictions
+tmp_restrictions {
+    size=2G          # Limit tmp filesystem size
+    mode=1777        # World-writable but with sticky bit
+    nosuid,noexec    # Prevent privilege escalation
+}
+
+# [OPTIONAL] Special filesystem handling
+# Security variant: Use restrictive settings shown below
+# DevOps variant: Consider the following adjustments:
+#   - proc: Use hidepid=1 to allow process monitoring tools
+#   - sys: Keep ro,nosuid,nodev but allow exec for container tools
+#   - debug: Consider mode=0755 if kernel debugging needed
+special_fs {
+    proc=hidepid=2,gid=proc   # Restrict process info visibility
+    sys=ro,nosuid,nodev,noexec # Restrict sysfs access
+    debug=ro,nosuid,nodev,noexec,mode=0700  # Restrict debugfs
+}
+
+###############################################################################
+# 3. Core Dump & Debug Controls
+###############################################################################
+
+# [REQUIRED] Core dump restrictions
+core_pattern=|/bin/false    # Disable core dumps
+kernel.core_uses_pid=0      # Don't add PID to core dump filename
+fs.suid_dumpable=0         # Disable core dumps for suid programs
+
+# [REQUIRED] Kernel crash dump settings
+crashkernel=none           # Disable crash dumps
+kernel.kptr_restrict=2     # Hide kernel symbol addresses
+kernel.panic_on_oops=1     # Panic (rather than continue) on oops
+
+# [OPTIONAL] Debug interface controls
+# Security variant: Keep all debugging disabled as shown below
+# DevOps variant: Recommended adjustments:
+#   - ftrace_enabled=1: Enable for performance analysis
+#   - kexec_load_disabled=0: Enable for development kernels
+#   - ptrace_scope=1: Allow debugger attachment for non-root users
+kernel.ftrace_enabled=0    # Disable ftrace debugging
+kernel.kexec_load_disabled=1 # Disable kexec
+kernel.yama.ptrace_scope=2 # Restrict ptrace to CAP_SYS_PTRACE
+
+###############################################################################
+# 4. Resource Management
+###############################################################################
+
+# [REQUIRED] Default ulimit settings
+ulimit {
+    nproc=4096            # Max number of processes (soft limit)
+    nproc_hard=8192       # Max number of processes (hard limit)
+    nofile=8192           # Max number of open files (soft limit)
+    nofile_hard=16384     # Max number of open files (hard limit)
+    core=0                # Core file size
+    memlock=64           # Locked-in-memory size
+}
+
+# [REQUIRED] Process resource restrictions
+process {
+    max_threads=20000     # System-wide thread limit
+    max_user_processes=4096 # Per-user process limit
+    max_child_processes=1024 # Per-parent process limit
+}
+
+# [OPTIONAL] Memory management
+# Security variant: Use restrictive settings shown below
+# DevOps variant: Recommended adjustments:
+#   - overcommit_memory=1: Better for development/testing
+#   - overcommit_ratio=80: Balance between safety and flexibility
+memory {
+    oom_kill_allocating_task=1 # Kill allocating task on OOM
+    panic_on_oom=0             # Don't panic on OOM
+    overcommit_memory=0        # Don't overcommit memory
+}
+
+###############################################################################
+# 5. Audit & Logging
+###############################################################################
+
+# [REQUIRED] Essential audit rules
+auditd {
+    max_log_file=8        # Max log file size (MB)
+    max_log_file_action=rotate
+    space_left=75         # Minimum free space (MB)
+    space_left_action=email
+    admin_space_left=50   # Critical free space (MB)
+    admin_space_left_action=single
+}
+
+# [REQUIRED] Log rotation settings
+logrotate {
+    rotate=4              # Keep 4 rotated logs
+    size=100M             # Rotate at 100MB
+    compress              # Compress rotated logs
+    delaycompress         # Don't compress most recent
+}
+
+# [OPTIONAL] Crash reporting
+# Security variant: Keep all crash reporting disabled as shown below
+# DevOps variant: Recommended settings:
+#   - enabled=1: Enable crash reporting for debugging
+#   - report_crashes=1: Allow automated reporting
+#   - save_core=1: Save cores for analysis
+#   - core_pattern=/var/crash/core.%e.%p: Structured core dumps
+crash_reporting {
+    enabled=0            # Disable automated crash reporting
+    report_crashes=0     # Don't send crash reports
+    save_core=0          # Don't save core dumps
+}
+
+# [OPTIONAL] Enhanced Security and Forensics Controls
+# Security variant: Consider enabling these settings for enhanced security and forensics capabilities
+# DevOps variant: These settings may impact performance/usability and are typically not needed
+security_forensics {
+    # Kernel audit settings
+    kernel.audit_backlog_limit=8192     # Increase audit event buffer
+    kernel.audit_failure=2              # Panic on audit failure (strict)
+    
+    # Enhanced logging
+    kernel.dmesg_restrict=1             # Restrict dmesg access to root
+    kernel.printk=3 4 1 7               # Increase kernel message logging
+    
+    # Process tracking
+    kernel.core_uses_pid=1              # Add PID to core dump filename
+    kernel.task_delayacct=1             # Enable process accounting
+    
+    # Additional memory protections
+    kernel.randomize_va_space=2         # Full ASLR
+    vm.mmap_rnd_bits=32                 # Maximum mmap randomization
+    vm.mmap_rnd_compat_bits=16          # Maximum mmap randomization (32-bit)
+    
+    # File system security
+    fs.protected_fifos=2                # Restrict FIFO creation in world-writable dirs
+    fs.protected_regular=2              # Restrict regular file creation in world-writable dirs
+    fs.suid_dumpable=0                  # Disable core dumps for suid programs
+    
+    # Network forensics
+    net.core.bpf_jit_harden=2           # Harden BPF JIT against attacks
+    net.ipv4.tcp_timestamps=0           # Disable TCP timestamps
+    net.ipv4.conf.all.log_martians=1    # Log spoofed/source-routed packets
+    
+    # USB Security
+    # Note: USB default deny (authorized_default=0) implications:
+    #  - All USB devices will be blocked from initializing until explicitly authorized
+    #  - This affects ALL USB devices including keyboards, forensics tools, write blockers
+    #  - To use any USB device, you must manually authorize via:
+    #    echo 1 > /sys/bus/usb/devices/DEVICE/authorized
+    #  - Consider carefully for forensics work where USB tools are essential
+    #  - Note: This will not prevent the Live USB from booting as the root filesystem
+    #    is mounted by initrd before these settings take effect
+    # kernel.usb.authorized_default=0     # CAUTION: Default deny USB devices - may interfere with forensics tools/write blockers
+#    kernel.usb.authorized_default=0     # Default deny USB devices (use with caution)
+    
+    # Additional capability restrictions
+    kernel.unprivileged_bpf_disabled=1  # Restrict BPF to privileged users
+    kernel.unprivileged_userns_clone=0  # Restrict user namespaces
+}
+
+###############################################################################
+# Template Usage Notes
+###############################################################################
+# 1. Review all REQUIRED settings before deployment
+# 2. Evaluate OPTIONAL settings based on variant needs
+# 3. Test impact on required tools/services before deployment
+# 4. Document any deviations from REQUIRED settings
+# 5. Regularly review and update based on new security requirements
+###############################################################################

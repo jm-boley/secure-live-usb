@@ -1,0 +1,128 @@
+# Security-Focused Sysctl Configuration Template
+# ============================================
+#
+# Purpose:
+# This template provides a baseline for kernel security parameters across different
+# spin variants. It includes commonly needed security settings with detailed
+# documentation and modification guidance.
+#
+# Usage:
+# 1. Copy this template to your spin's configuration directory
+# 2. Modify parameters marked as OPTIONAL based on your needs
+# 3. Review and adjust REQUIRED parameters if your use case specifically demands it
+# 4. Remove or comment out settings that conflict with your spin's requirements
+#
+# Documentation Format:
+# Each setting includes:
+# - Requirement level (REQUIRED/OPTIONAL)
+# - Security impact
+# - Performance implications
+# - Modification guidance
+# - Default value reference
+
+#--------------------
+# Memory Protection
+#--------------------
+
+# [REQUIRED] Disable kernel address exposure via /proc
+# Impact: Prevents leaking kernel memory addresses via /proc/kallsyms
+# Performance: No impact
+# Default: 0
+kernel.kptr_restrict = 1
+
+# [REQUIRED] Restrict access to kernel logs
+# Impact: Prevents unprivileged users from viewing kernel memory addresses
+# Performance: No impact
+# Default: 1
+kernel.dmesg_restrict = 1
+
+# [OPTIONAL] Enable KASLR
+# Impact: Randomizes kernel base address at boot
+# Performance: Minimal boot-time impact
+# Modification: Can be disabled if incompatible with specific debugging tools
+# Default: 1
+kernel.randomize_va_space = 2
+
+#--------------------
+# Network Security
+#--------------------
+
+# [REQUIRED] Protect against SYN flood attacks
+# Impact: Enables SYN cookies when SYN backlog queue is full
+# Performance: Minimal impact under normal conditions
+# Default: 1 
+net.ipv4.tcp_syncookies = 1
+
+# [REQUIRED] Disable source routing
+# Impact: Prevents source-routed packets from being accepted
+# Performance: No impact
+# Default: 0
+net.ipv4.conf.all.accept_source_route = 0
+net.ipv4.conf.default.accept_source_route = 0
+
+# [OPTIONAL] Ignore ICMP redirects
+# Impact: Prevents MITM attacks via ICMP redirects
+# Performance: May impact routing efficiency in complex networks
+# Modification: Enable if required for network routing
+# Default: 1
+net.ipv4.conf.all.accept_redirects = 0
+net.ipv4.conf.default.accept_redirects = 0
+
+#--------------------
+# Filesystem Security
+#--------------------
+
+# [REQUIRED] Restrict symbolic link following
+# Impact: Prevents symlink-based attacks in world-writable directories
+# Performance: Minimal impact
+# Default: 0
+fs.protected_symlinks = 1
+
+# [REQUIRED] Restrict hardlink creation
+# Impact: Prevents hardlink-based attacks in world-writable directories
+# Performance: Minimal impact
+# Default: 0
+fs.protected_hardlinks = 1
+
+# [OPTIONAL] Disable the creation of core dumps
+# Impact: Prevents leaking process memory contents
+# Performance: No impact on normal operation
+# Modification: Enable if core dumps needed for debugging
+# Default: 1 (enabled)
+fs.suid_dumpable = 0
+
+#--------------------
+# Process Security
+#--------------------
+
+# [REQUIRED] Restrict ptrace scope
+# Impact: Limits process tracing capabilities
+# Performance: No impact
+# Modification: Consider relaxing for debugging tools
+# Default: 0
+kernel.yama.ptrace_scope = 1
+
+# [OPTIONAL] Enable execshield
+# Impact: Enables NX bit protection
+# Performance: No noticeable impact
+# Modification: Disable if running very old applications
+# Default: 1
+kernel.exec-shield = 1
+
+#--------------------
+# System Auditing
+#--------------------
+
+# [OPTIONAL] Enable audit write protection
+# Impact: Prevents changes to audit rules while running
+# Performance: No impact
+# Modification: Disable if dynamic audit rule changes needed
+# Default: 0
+kernel.audit_write_protect = 1
+
+# Configuration Notes:
+# 1. All settings support live modification via sysctl -w unless noted
+# 2. Test changes thoroughly before deployment
+# 3. Some settings may need adjustment based on workload
+# 4. Document any deviations from REQUIRED settings
+# 5. Review settings periodically against current security best practices

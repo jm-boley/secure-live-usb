@@ -1,0 +1,57 @@
+# Application-specific AppArmor Profile Template
+# Demonstrates extending the base template for specific applications
+
+# ===================================================================
+# Profile Definition
+# ===================================================================
+# [REQUIRED] Profile naming - replace APP_NAME with actual name
+profile APP_NAME /usr/bin/APP_NAME {
+    # Include base template
+    #include <base>
+
+    # ===================================================================
+    # Confinement Level Selection
+    # ===================================================================
+    # [REQUIRED] Choose ONE of:
+    #   1. Strict confinement (default for production)
+    #flags=(enforce)
+    
+    #   2. Complain mode (for testing)
+    #flags=(complain)
+
+    # ===================================================================
+    # Application-Specific Rules
+    # ===================================================================
+    # [REQUIRED] Binary access
+    /usr/bin/APP_NAME mr,
+
+    # [REQUIRED] Configuration access
+    /etc/APP_NAME/**   r,
+    owner /etc/APP_NAME/*.conf r,
+
+    # [OPTIONAL] Data directory access
+    owner /var/lib/APP_NAME/** rwk,
+
+    # ===================================================================
+    # Variant Handling
+    # ===================================================================
+    # [OPTIONAL] DevOps variant might need:
+    #    - Additional network access
+    #    - Container runtime access
+    #    - Build tool access
+    
+    # [OPTIONAL] Security variant might need:
+    #    - Additional audit logging
+    #    - Restricted file system access
+    #    - Memory protection rules
+
+    # ===================================================================
+    # Documentation Notes:
+    # ===================================================================
+    # 1. Replace APP_NAME with the actual application name
+    # 2. Remove unused optional sections
+    # 3. Document any deviations from base template
+    # 4. Include rationale for additional permissions
+    # 5. Test thoroughly in complain mode before deployment
+}
+

@@ -1,170 +1,54 @@
-# Modular Debian Live Build System
+# Modular Debian Live Build System (Core)
 
-This project provides a framework for building customized Debian-based live distributions with a focus on specialized developer and security workflows. Built on a common core system, it offers distinct specialized "spins" targeting specific use cases:
+This project provides a framework for building customized Debian-based live distributions with a "security-first, performance-aware" philosophy at its core. We've created a system that proves robust security doesn't have to come at the cost of performance - each component is carefully selected and optimized to work together efficiently while maintaining strong security boundaries. Think of it as a finely-tuned race car with a complete safety system - fast when you need it, but always keeping you protected.
 
-- **Core System**: A lightweight LXQt desktop with essential system tools and security hardening
+Built with essential security hardening and intelligent performance optimizations, our core system serves as the foundation for specialized "spins" targeting specific use cases:
+
 - **DevOps Spin**: Extended with container runtime, development tools, and monitoring capabilities
 - **Security/Forensics Spin**: Enhanced with security analysis, forensics, and network monitoring tools
 
-Each spin extends the core system with targeted package selections, configurations, and workflow optimizations while maintaining a consistent base architecture.
+The core system implementation itself includes packages and tooling for a lightweight LXQt desktop with modern conveniences, such as a Network Management widget. Our layered security approach starts at the kernel level and extends through every aspect of the system, while careful performance tuning ensures responsive operation even on older hardware. This balanced approach creates a minimal but capable foundation that can be confidently extended for specialized uses without compromising either security or usability.
 
-## Features
+The DevOps and Security spins are accessible from their respective branches of the same names. Each spin's project branch extends the core system with targeted package selections, configurations, and workflow optimizations while maintaining a consistent base architecture through merges from the core project.
 
-### Stock DevOps Toolkit
+## AI Use in Documentation Disclaimer
 
-The built image "ships" with a carefully selected set of DevOps tools, prioritizing security and isolation while maintaining full functionality for development workflows. Visual Studio Code is provided for coding and debugging tasks, while Podman containers provide isolated runtimes for code development and testing environments. Containers may also host specialized applications to perform non-standard development activities, such as Postman for API testing. The git CLI is also provided in addition to VSCode's git management plugin for working with code repositories.
+This project relies on the use of LLM's to help accelerate the project documentation process and allow it to keep pace with changes as they are made. Some stylistic inconsistencies, such as bullet point format schemas and conversational tone and approach, are inevitable as the documentation is progressively updated. Documentation will be periodically edited and brought in line with a consistent standard by a human maintainer, particularly as project milestones are reached.
 
-#### Container Runtime (Podman)
+## Quick Start
 
-Modern development demands container isolation, but security shouldn't be optional. Podman provides a daemonless container engine that puts security first without sacrificing developer productivity. Running containers as your regular user account is the default, ensuring that even a compromised container can't escalate beyond your regular user permissions.
+Get started building your core system in minutes:
 
-- Rootless Container Operations
-    - Zero-trust container execution by default
-    - User namespace isolation
-    - No privileged daemon process
-    - Seamless integration with user services
-- Pod and Container Management
-    - Native pod support for microservices
-    - Docker-compatible CLI interface
-    - Built-in container health monitoring
-    - Automated container lifecycle management
-- System Integration
-    - Native systemd service management
-    - Socket activation support
-    - Unified logging with journald
-    - Resource cleanup on service shutdown
-- Security Controls
-    - SELinux mandatory access control
-    - Seccomp system call filtering
-    - Fine-grained capability management
-    - cgroups v2 resource constraints
+### Minimum Requirements
+- 4GB RAM (8GB recommended for better build performance)
+- 20GB free disk space
+- Docker or Podman installed
+- Git for cloning the repository
 
-#### Development Environment (Visual Studio Code)
-
-** Planned **
-
-#### Version Control (Git)
-
-** Planned **
-
-#### Backup and Recovery Tools
-
-Because "we have backups" and "we have *tested* backups" are two very different statements. Our backup strategy follows the "trust no one, verify everything" philosophy—with a dash of "seriously, verify it again" for good measure. Colonial Pipeline wishes they had been this paranoid.
-
-- Automated Backup Systems
-    - restic with encryption-at-rest
-    - Immutable snapshot management
-    - Multi-target replication
-    - Tamper-evident storage
-- Recovery Testing
-    - Automated restore verification
-    - Integrity validation routines
-    - Air-gapped backup copies
-    - Recovery simulation tools
-- State Management
-    - Configuration versioning
-    - System state snapshots
-    - Roll-back capabilities
-    - Point-in-time recovery
-- Disaster Recovery
-    - Documented recovery procedures
-    - Offline recovery tools
-    - Emergency access protocols
-    - Integrity verification chains
-
-#### Terminal Emulator Options
-
-##### Default Terminal
-- Modern terminal emulator with full feature set:
-    - Split pane support
-    - Tab management
-    - Command history
-    - Shell integration
-
-##### Optional: Warp Terminal
-The build script includes optional support for [Warp](https://www.warp.dev), a modern, Rust-based terminal that features GPU acceleration, AI assistance, and collaborative features. 
-
-To include Warp in your build:
+### Basic Build Steps
 ```bash
-./build.sh --with-warp
+# 1. Clone the repository
+git clone [repository-url]
+cd secure-live-usb
+
+# 2. Build the system
+./build.sh
 ```
 
-When enabled, the latest Warp AppImage will be downloaded during the build process and placed in the built image's `/var/lib/warp` directory. Note that Warp:
-- Requires a GPU that supports OpenGL 3.3+
-- Is currently in beta for Linux
-- Requires a free account for basic functionality, and that paid subscriptions are required to unlock full access to LLM assistants
-- Is proprietary software (not open source)
+The build process typically takes 15-30 minutes depending on your system and internet connection. The resulting ISO will be available in the `build/` directory as `live-image-amd64.hybrid.iso`.
 
-The AppImage is downloaded fresh with each build to ensure compliance with Warp's distribution terms.
+### Quick Verification
+1. Use your preferred tool to write the ISO to a USB drive, or test in a virtual machine
+2. Boot the live system
+3. Verify core functionality:
+    - LXQt desktop environment loads
+    - Network management is available
+    - Basic security features are active (firewall, system hardening)
 
-### Stock Security Toolkit
-
-The distribution comes equipped with a comprehensive suite of security tools, carefully selected to provide a complete security operations workflow while maintaining ease of use. The toolkit spans the full spectrum of security needs, from system hardening and monitoring to incident response and forensics. Core components like AppArmor provide mandatory access control, while specialized tools enable thorough system auditing, network analysis, and threat detection. The toolkit supports both proactive security measures through tools like Lynis and AIDE, as well as reactive capabilities with forensics utilities such as Sleuthkit and dc3dd.
-
-#### System Monitoring and Auditing
-
-Effective system security begins with comprehensive visibility. This toolkit integrates multiple layers of monitoring and auditing capabilities to maintain continuous system observability. From low-level system calls to high-level resource utilization, these tools work in concert to provide a complete picture of system activity and maintain detailed audit trails for security analysis and compliance requirements.
-
-- `auditd` + `audispd-plugins`: System call auditing and plugin framework
-    - Captures and logs security-critical system events
-    - Maintains tamper-resistant audit trails for compliance
-    - Extensible plugin architecture for custom monitoring
-    - Configurable rules for focused event capture
-- `sysstat`, `iotop`, `htop`, `atop`: System performance monitoring
-    - Real-time resource utilization tracking
-    - Historical performance trend analysis
-    - I/O bottleneck identification
-    - Process behavior monitoring
-- `logwatch`, `syslog-ng`: Log management and analysis
-    - Centralized log aggregation and routing
-    - Automated log analysis and reporting
-    - Configurable alert thresholds
-    - Log integrity verification
-
-#### Intrusion Detection and Prevention
-
-Detecting and kicking out unwelcome snoops who'd love to steal your coding inspirations (and anything else they can get their grubby little mitts on) requires multiple layers of defense. This toolkit combines both signature-based and behavior-based detection methods to create a robust security posture. From file integrity monitoring to sophisticated rootkit detection, these tools work in concert to identify potential compromises. Regular automated scans help ensure system integrity, while real-time monitoring helps catch suspicious activities as they occur.
-
-- `aide`, `rkhunter`, `chkrootkit`: File integrity and rootkit detection
-    - AIDE maintains cryptographic checksums of critical system files
-    - Detects file modifications, additions, and deletions
-    - RKHunter and Chkrootkit provide complementary rootkit scanning
-    - Identifies common rootkit signatures and suspicious system modifications
-- `tripwire`: File and directory integrity checker
-    - Policy-driven integrity monitoring
-    - Cryptographically secure database of system state
-    - Detailed reporting of file system changes
-    - Configurable rules for different security levels
-- `unhide`, `tiger`: Process and anomaly detection
-    - Identifies hidden processes and ports
-    - Detects discrepancies between different system views
-    - Tiger performs comprehensive security audits
-    - Automated system security status reporting
-
-#### Network Security
-
-Let's face it; your cybersecurity infrastructure is only as good as your ability to detect and respond to the latest threats. This collection of network security tools helps you monitor, control, and secure all traffic flowing through your system. From packet inspection to intrusion detection, these tools work together to keep your network communications locked down tight.
-
-- `nmap`, `netstat`, `ss`: Network scanning and monitoring
-    - Comprehensive port and service detection
-    - Real-time connection tracking
-    - Network topology mapping
-    - Service version detection and security assessment
-- `tcpdump`, `wireshark`: Network packet analysis
-    - Deep packet inspection capabilities
-    - Traffic pattern analysis
-    - Protocol-specific debugging
-    - Network forensics support
-- `fail2ban`, `iptables`: Access control and intrusion prevention
-    - Automated ban system for malicious actors
-    - Customizable firewall rule management
-    - Protection against brute force attacks
-    - Rate limiting and access control
-- `snort`, `suricata`: Network intrusion detection
-    - Real-time traffic analysis
-    - Threat detection and prevention
-    - Protocol analysis
-    - Custom rule creation support
+For detailed information about customization, building specific spins, or advanced configuration, see:
+- [Build Instructions](#build-instructions)
+- [System Customization](#system-customization)
+- [Core Security Features](#core-security-features)
 
 ## Architecture Overview
 
@@ -173,8 +57,12 @@ The project uses a modular architecture consisting of:
 1. **Core System**
 - Lightweight LXQt desktop environment
 - Essential system utilities
-- Basic security hardening
-- Common development tools
+- Fundamental security hardening:
+    * Basic firewall configuration
+    * SSH hardening
+    * System control optimizations
+    * Password quality enforcement
+- Development essentials
 - Network configuration
 
 2. **Specialized Spins**
@@ -206,24 +94,31 @@ No other dependencies are required as all build tools are contained within the b
 project-root/
 ├── .gitignore                 # Git exclusions
 ├── build.sh                   # Main build automation script
+├── build/                     # Build workspace (contents generated by live build system)
+├── Documentation/             # Technical reference documentation
 ├── Dockerfile                 # Build environment definition
 ├── overlay-includes.chroot/   # Core system overlay files
-├── overlay-config/            # Core configuration files
-│   ├── archives/             # Repository configurations
-│   ├── hooks/               # Build hook scripts
-│   ├── includes/            # File inclusions
-│   └── package-lists/       # Core package selections
-├── build/                    # Build workspace
-│   ├── auto/               # Build automation
-│   └── config/             # Live-build configs
-├── Documentation/            # Core documentation
-└── migration/               # Specialized spins
-    ├── devops/             # DevOps spin
-    │   ├── README.md       # DevOps documentation
-    │   └── overlay-config/ # DevOps-specific configs
-    └── security/           # Security spin
-        ├── README.md       # Security documentation
-        └── overlay-config/ # Security-specific configs
+│   ├── etc/                   # System and service modification drop-in unit files
+│   └── usr/local/sbin         # System and service modification scripts and binaries
+└── overlay-config/            # Core configuration files
+    ├── archives/              # Repository configurations
+    ├── hooks/                 # Build hook scripts
+    ├── includes/              # File inclusions
+    └── package-lists/         # Core package selections
+```
+
+** Important Note! The project is currently undergoing a migration from a single-branch, monolithic implementation to streamlined specializations, or "spins", that target the DevOps and Security/Forensics use cases documented above. Once the migration is complete, each will have its own dedicated project branch with both sharing a common core implementation merged from a dedicated Core implementation branch. DevOps- and security-specialized configurations are currently staged in a temporary `migration/` directory under the Core branch (this). Its contents will eventually be moved to their respective project branches. They have been left in the Core branch primarily as reference while the common system configuration refactoring is ongoing.
+
+```
+migration/                 # *Transitional temporary staging directory for the specialized configurations refactored out of the core implementation*
+├── devops/                       # DevOps spin
+│   ├── README.md                 # DevOps documentation
+│   ├── overlay-config/           # DevOps-specific configs
+│   └── overlay-includes.chroot   # DevOps-specific system configurations
+└── security/                     # Security spin
+    ├── README.md                 # Security documentation
+    ├── overlay-config/           # Security-specific configs
+    └── overlay-includes.chroot   # Security-specific system configurations
 ```
 
 The `build/` directory serves as the main live-build working directory, containing all configuration and automation scripts needed to create the live image. While build artifacts themselves are excluded from version control, the directory structure and configuration files are tracked because they define how the system is constructed.
@@ -282,11 +177,12 @@ The `overlay-config/` directory contains several subdirectories containing secur
     - Standard hooks from live-build (symlinked from /usr/share/live/build/hooks/)
 
 - `package-lists/`: Defines our custom package selections
-    - security.list.chroot: Security-focused tools and packages
-    - devops.list.chroot: DevOps and development tools
-    - live.list.chroot: Live system specific packages
-    - desktop.list.chroot: Desktop environment and applications
-    - networking.list.chroot: Network tools and utilities
+    - core-desktop.list.chroot: LXQt desktop environment and applications
+    - core-file-utils.list.chroot: Essential file management utilities
+    - core-text-utils.list.chroot: Text processing tools
+    - core-network.list.chroot: Basic networking utilities
+    - core-monitoring.list.chroot: Basic system monitoring tools
+    - core-containers.list.chroot: Minimal container support
 
 During the build process, these overlay configurations are copied into the appropriate locations in the build/config directory after running `lb config`. This ensures our configurations are preserved while allowing us to safely regenerate the base configuration as needed.
 
@@ -340,7 +236,7 @@ The `build.sh` script handles the container management and build process:
 
 - Automatically detects available container managers (Podman or Docker)
 - Defaults to Podman if both are available for better security
-- Can be forced to use Docker with `--override-manager Docker` flag
+- Can be forced to use Docker with `--use-docker` flag (Docker required, ignored with a warning if not available)
 - Creates needed directories automatically
 - Handles SELinux contexts when using Podman
 - Mounts the overlay-includes.chroot/ directory as the includes.chroot location for filesystem overlays
@@ -368,40 +264,78 @@ This project uses Debian live-build's standard customization mechanisms with mod
 
 All modifications are version controlled, providing clear tracking of changes and enabling collaborative development.
 
-## Network Security Hardening
-This distribution implements comprehensive network security measures combining kernel hardening, firewall rules, and nftables-based defense-in-depth mechanisms to protect against common network-based threats:
+## Core Security Features
 
-- Kernel security parameters configured for protection against SYN floods, IP spoofing, and various network-based attacks
-- Defense-in-depth network security approach using nftables
-- Default-deny firewall policy with targeted allowances for required services
-- Multi-layered connection tracking and state validation
-- Rate limiting and anti-scan protection mechanisms
-- Comprehensive security event logging with flood protection
+We've built this system with a "security-first, performance-aware" philosophy. Our approach combines robust security measures with carefully tuned performance optimizations, ensuring that protection doesn't come at the cost of usability. From kernel-level safeguards to user-space controls, each security layer is designed to work together seamlessly while maintaining responsive system performance. Think of it as having a well-trained security team that's also an efficiency expert - keeping you safe while keeping things running smoothly.
 
-For detailed technical implementation information, see [Network Hardening Reference](Documentation/01-Network%20Hardening%20Reference.md).
-This distribution implements comprehensive network security measures combining kernel hardening, firewall rules, and nftables-based defense-in-depth mechanisms to protect against common network-based threats:
+The core system implements comprehensive security hardening measures focused on establishing a secure foundation. We provide a comprehensive overview of the changes we've made in the following sections.
 
-- Kernel security parameters configured for protection against SYN floods, IP spoofing, and various network-based attacks
-- Defense-in-depth network security approach using nftables
-- Default-deny firewall policy with targeted allowances for required services
-- Multi-layered connection tracking and state validation
-- Rate limiting and anti-scan protection mechanisms
-- Comprehensive security event logging with flood protection
+### System Hardening
+- **Firewall Configuration**: Basic nftables ruleset for network protection
+- **SSH Hardening**: Secure OpenSSH configuration with:
+    * Strong cipher preferences
+    * Disabled root login
+    * Key-based authentication requirements
+- **System Controls**: Optimized kernel parameters for security:
+    * Network stack hardening
+    * Memory protection features
+    * Resource limits
+- **Authentication & Passwords**:
+    * PAM configuration for secure authentication
+    * Password quality requirements
+    * Login attempt limits
+- **Base System Security**:
+    * Secure file permissions
+    * Service minimization
+    * User session security
 
-## Container Configuration and Security
+### Device Mount Security
+- **Automatic Mount Prevention**:
+    * UDisks2 configuration to prevent automatic mounting
+    * udev rules to block automatic device handling
+    * Boot-time safety mechanisms for Live USB operation
+- **Mount Option Hardening**:
+    * Enforced noexec and nosuid options
+    * Explicit user interaction requirement
+    * Hidden internal device presentation
 
-The distribution implements a comprehensive container runtime system that prioritizes security while maintaining usability:
+### Kernel-level Protection
+- **Memory Security**:
+    * Address space randomization (ASLR)
+    * Kernel pointer restrictions
+    * Memory access controls
+    * Protected shared memory segments
+- **Process Security**:
+    * Process isolation mechanisms
+    * Restricted debugging capabilities
+    * Resource boundary enforcement
+    * BPF security controls
 
-- Secure storage implementation using fuse-overlayfs with strict access controls
-- User-level container management with automatic environment configuration
-- Rootless container operations by default through Podman
-- Multi-layered security featuring SELinux integration and strict access controls
-- Resource management with quota enforcement and monitoring
-- Network isolation by default with controlled access mechanisms
-- Comprehensive error handling and security event logging
+### Network Hardening
+- **TCP/IP Security**:
+    * SYN flood protection
+    * Network redirect prevention
+    * Source routing restrictions
+    * Connection backlog controls
+- **Performance Optimization**:
+    * TCP buffer tuning
+    * Connection handling optimization
+    * Socket parameter configuration
+    * Network stack efficiency
 
-For detailed technical implementation information, see [Container Security Reference](Documentation/02-Container-Security-Reference.md).
-- Regularly audit container network configurations
+### Live Environment Optimizations
+- **Resource Management**:
+    * Dynamic cache pressure control
+    * Optimized swap configuration
+    * Memory allocation tuning
+    * I/O subsystem optimization
+- **Performance Tuning**:
+    * Process scheduling optimization
+    * File system access efficiency
+    * Resource limit balancing
+    * Boot-time safety mechanisms
+
+The system maintains a careful balance between security and performance through modular configuration files and adaptive tuning mechanisms. Each security feature and performance optimization can be customized for specific use cases while maintaining core security principles.
 
 ## Memory Management
 
@@ -437,17 +371,20 @@ The system uses a dynamic ZRAM configuration that adapts to the host system's av
 
 ## Build Instructions
 
-Choose which spin to build:
+To build different variants of the system, check out the appropriate branch first:
 
 ```bash
-# Build core system only
-./build.sh --core-only
+# For the core system (main branch)
+git checkout main
+./build.sh
 
-# Build DevOps spin
-./build.sh --spin devops
+# For the DevOps variant
+git checkout devops
+./build.sh
 
-# Build Security spin
-./build.sh --spin security
+# For the Security variant
+git checkout security
+./build.sh
 ```
 
 The resulting ISO will be created in the `build/` directory.
@@ -455,8 +392,8 @@ The resulting ISO will be created in the `build/` directory.
 ## Documentation
 
 - [Core System Documentation](Documentation/)
-- [DevOps Spin Documentation](migration/devops/README.md)
-- [Security Spin Documentation](migration/security/README.md)
+
+For spin-specific documentation, refer to the README.md's and visit the `Documentation/` directories of the relevant branch(es).
 
 ## For Contributors
 
