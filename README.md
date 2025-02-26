@@ -107,18 +107,7 @@ project-root/
     └── package-lists/         # Core package selections
 ```
 
-The `build/` directory serves as the main live-build working directory, containing all configuration and automation scripts needed to create the live image. While build artifacts themselves are excluded from version control, the directory structure and configuration files are tracked because they define how the system is constructed.
-
-This directory follows live-build's expected layout, with `auto/` containing build automation and `config/` holding the detailed configuration elements like package lists, hooks, and file overlays. Each subdirectory serves a specific purpose in the live-build process:
-
-- `auto/`: Contains scripts that automate the build process
-- `config/`: Holds all configuration elements divided by purpose
-- `package-lists/`: Defines what packages are installed
-- `hooks/`: Scripts that run at different build stages
-- `includes.chroot/`: Files to include in the final system
-- `apt/`: APT sources and preferences configuration
-
-**Note**: While build artifacts (ISOs, caches, etc.) are excluded via .gitignore, the configuration within build/ is essential and version controlled. This ensures build reproducibility while keeping the repository size manageable.
+The `build/` directory serves as the main live-build working directory, containing all configuration and automation scripts needed to create the live image. Note that `build/` directory contents are excluded from version control as they are automatically generated from the `overlay-\*/` directory contents and live-build configuration step. Both `overlay-config` and `overlay-includes.chroot`, however, *are* tracked as they provide the customizations to be grafted into the base Debian image.
 
 ## Containerized Build Environment
 
