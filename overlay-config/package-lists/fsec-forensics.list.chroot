@@ -1,0 +1,30 @@
+## Disk Forensics
+# Tools for analyzing storage devices and file systems
+autopsy                 # Digital forensics platform and graphical interface
+dc3dd                   # Enhanced version of dd for forensics with integrity verification
+gpart                   # Partition table recovery tool
+safecopy               # Data recovery tool with advanced error handling
+sleuthkit              # Collection of command-line forensics analysis tools
+
+## Memory Analysis
+# Tools for system memory examination and analysis
+bulk-extractor         # Extract interesting patterns from memory dumps
+memdump                # Memory dumping utility
+memory-analysis-tools   # Collection of memory analysis utilities
+volatility             # Advanced memory forensics framework
+
+## File Recovery
+# Tools for recovering deleted or damaged files
+ddrescue               # Data recovery tool with error handling
+extundelete            # Ext3/4 deleted file recovery utility
+foremost               # File recovery through headers and footers
+magicrescue            # File carver with magic number recognition
+photorec               # File data recovery software
+scalpel                # Fast file carver with configuration
+testdisk               # Partition scanning and recovery tool
+
+## Network Forensics
+# Tools for analyzing network traffic and artifacts
+nfdump                 # NetFlow capture and analysis
+tcpdump                # Network packet analyzer
+wireshark              # Network protocol analyzer with GUI

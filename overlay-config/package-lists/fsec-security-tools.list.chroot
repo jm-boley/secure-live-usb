@@ -1,0 +1,30 @@
+## Access Control
+# Authentication and authorization
+acl                    # Access control list utilities
+auditd                 # System audit daemon
+libpam-cracklib       # PAM module for password strength testing
+sudo                   # Superuser access management
+
+## File Integrity
+# File system security
+checksecurity         # Basic system security checks
+tripwire              # File integrity checker
+
+## Malware Detection
+# Antivirus and malware scanning
+clamav               # Antivirus scanner
+clamav-daemon        # Antivirus scanner daemon
+chkrootkit           # Rootkit detector
+rkhunter             # Rootkit, backdoor, and exploit detector
+
+## Password Security
+# Password auditing and cracking tools
+hydra                # Network login cracker
+john                 # Password cracker for security auditing
+
+## Security Assessment
+# Security analysis and auditing
+aide                 # Advanced Intrusion Detection Environment
+debsecan            # Debian Security Analyzer
+fail2ban            # Ban hosts that cause authentication errors
+lynis               # Security auditing tool

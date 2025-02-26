@@ -1,0 +1,46 @@
+## System Hardware Analysis Tools
+# Core system hardware information and analysis tools
+dmidecode            # DMI table decoder for hardware information
+hardinfo             # System profiler and benchmark tool
+hdparm               # Hard drive parameter analysis and tuning
+hwinfo               # Hardware identification system
+inxi                 # System information script
+lshw                 # Hardware lister
+pciutils             # PCI utilities
+usbutils             # USB device utilities
+
+## Storage & Memory Tools
+# Tools for analyzing storage devices and memory
+bonnie++             # Hard drive and file system benchmark suite
+dosfstools           # DOS filesystem utilities
+fatcat               # FAT filesystem exploration and recovery
+gddrescue            # Data recovery tool
+linux-tools-common   # Linux kernel tools
+memtest86+           # Memory testing utility
+memtester            # Memory testing utility
+parted               # Partition manipulation program
+smartmontools        # SMART monitoring tools
+
+## Firmware Analysis Tools
+# Tools for firmware extraction and analysis
+binwalk              # Firmware analysis tool
+firmware-mod-kit     # Firmware modification kit
+firmware-tools       # Collection of firmware tools
+uefi-firmware-parser # UEFI firmware file format parser
+
+## UEFI/BIOS Tools
+# Tools for UEFI/BIOS analysis and management
+acpica-tools         # ACPI utilities
+chipsec              # Platform security assessment framework
+efibootmgr           # UEFI boot manager
+efitools             # Tools for manipulating UEFI secure boot
+flashrom             # ROM/flash BIOS utility
+fwts                 # Firmware Test Suite
+
+## TPM & Security Hardware
+# Tools for TPM and security hardware analysis
+opensc               # Smart card utilities
+libpam-cracklib      # PAM module for password strength testing with TPM integration
+tpm-tools            # TPM management tools
+trousers             # TCG Software Stack for TPM
+yubico-piv-tool      # Yubikey PIV management utilities

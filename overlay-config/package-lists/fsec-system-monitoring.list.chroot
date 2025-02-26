@@ -1,0 +1,15 @@
+## System Resource Monitoring
+# Tools for monitoring system resources including CPU, memory, network, and I/O
+nethogs                # Per-process network bandwidth monitor
+procps                 # Process monitoring and system utilities
+sysdig                 # System-level exploration and monitoring
+
+## Process Monitoring
+# Tools for tracking process execution, accounting, and user activity
+acct                   # Process accounting utilities
+whowatch               # Real-time user logins/process monitoring
+
+## Filesystem Monitoring
+# Tools for tracking and monitoring filesystem activity
+fatrace               # File access trace tool
+inotify-tools         # Filesystem monitoring and event notification
