@@ -11,7 +11,7 @@ The core system implementation itself includes packages and tooling for a lightw
 
 The DevOps and Security spins are accessible from their respective branches of the same names. Each spin's project branch extends the core system with targeted package selections, configurations, and workflow optimizations while maintaining a consistent base architecture through merges from the core project.
 
-## AI Use in Documentation Disclaimer
+## Use of AI in Documentation Disclaimer
 
 This project relies on the use of LLM's to help accelerate the project documentation process and allow it to keep pace with changes as they are made. Some stylistic inconsistencies, such as bullet point format schemas and conversational tone and approach, are inevitable as the documentation is progressively updated. Documentation will be periodically edited and brought in line with a consistent standard by a human maintainer, particularly as project milestones are reached.
 
