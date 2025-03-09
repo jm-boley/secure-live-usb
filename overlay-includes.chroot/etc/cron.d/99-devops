@@ -1,0 +1,6 @@
+# DevOps spin specific cron jobs
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Daily system integrity check
+15 3 * * * root test -x /usr/sbin/aide && /usr/sbin/aide --check

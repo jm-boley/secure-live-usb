@@ -1,0 +1,262 @@
+#!/bin/bash
+# USB Device Override Hook for DevOps Spin
+# Provides a mechanism to temporarily override USB device restrictions
+# while maintaining security through session tracking and audit logging
+
+set -e
+
+# Create required directories
+mkdir -p /usr/local/sbin
+mkdir -p /var/log/usb-override
+mkdir -p /etc/usb-override
+touch /var/log/usb-override/audit.log
+chmod 640 /var/log/usb-override/audit.log
+
+# Install the usb-override tool
+cat > /usr/local/sbin/usb-override << 'EOF'
+#!/bin/bash
+
+# USB Override Tool
+# Provides temporary access to restricted USB devices with session tracking
+
+set -e
+
+OVERRIDE_DIR="/etc/usb-override"
+SESSION_DIR="/run/usb-override"
+AUDIT_LOG="/var/log/usb-override/audit.log"
+OVERRIDE_TIMEOUT=3600  # Default timeout in seconds (1 hour)
+
+log_action() {
+    local action="$1"
+    local details="$2"
+    echo "$(date '+%Y-%m-%d %H:%M:%S') [$$] $USER - $action: $details" >> "$AUDIT_LOG"
+}
+
+check_root() {
+    if [ "$(id -u)" != "0" ]; then
+        echo "Error: This tool requires root privileges"
+        exit 1
+    fi
+}
+
+setup_session_dir() {
+    mkdir -p "$SESSION_DIR"
+    chmod 755 "$SESSION_DIR"
+}
+
+list_devices() {
+    echo "Available USB devices:"
+    echo "---------------------"
+    lsusb | while read -r line; do
+        local bus_id dev_id remainder
+        read -r bus_id dev_id remainder <<< "$line"
+        echo "$line"
+        if [ -f "$SESSION_DIR/${bus_id}_${dev_id}" ]; then
+            echo "  → Currently overridden (expires: $(cat "$SESSION_DIR/${bus_id}_${dev_id}"))"
+        fi
+    done
+}
+
+enable_device() {
+    local bus_id="$1"
+    local dev_id="$2"
+    local duration="${3:-$OVERRIDE_TIMEOUT}"
+    
+    # Calculate expiration time
+    local expiry
+    expiry=$(date -d "@$(($(date +%s) + duration))" '+%Y-%m-%d %H:%M:%S')
+    
+    # Create session marker
+    echo "$expiry" > "$SESSION_DIR/${bus_id}_${dev_id}"
+    
+    # Temporarily unblock the device
+    udevadm trigger --action=change "/dev/bus/usb/$bus_id/$dev_id"
+    
+    log_action "ENABLE" "Device $bus_id:$dev_id enabled for $duration seconds by $USER"
+    echo "Device $bus_id:$dev_id enabled until $expiry"
+}
+
+disable_device() {
+    local bus_id="$1"
+    local dev_id="$2"
+    
+    rm -f "$SESSION_DIR/${bus_id}_${dev_id}"
+    udevadm trigger --action=change "/dev/bus/usb/$bus_id/$dev_id"
+    
+    log_action "DISABLE" "Device $bus_id:$dev_id disabled by $USER"
+    echo "Device $bus_id:$dev_id disabled"
+}
+
+cleanup_expired() {
+    local now
+    now=$(date '+%Y-%m-%d %H:%M:%S')
+    
+    find "$SESSION_DIR" -type f | while read -r session; do
+        if [ "$(cat "$session")" \< "$now" ]; then
+            local device
+            device=$(basename "$session")
+            log_action "EXPIRE" "Session expired for device $device"
+            rm -f "$session"
+        fi
+    done
+}
+
+show_help() {
+    cat << 'HELP'
+USB Override Tool - Manage temporary access to restricted USB devices
+
+Usage: usb-override <command> [options]
+
+Commands:
+  list                     Show all USB devices and their override status
+  enable <bus> <dev> [seconds]  Enable a device for specified duration (default: 1 hour)
+  disable <bus> <dev>     Disable a previously enabled device
+  cleanup                 Remove expired override sessions
+  help                    Show this help message
+
+Examples:
+  usb-override list
+  usb-override enable 001 004 3600
+  usb-override disable 001 004
+
+Note: All commands require root privileges
+HELP
+}
+
+# Main command processing
+check_root
+setup_session_dir
+cleanup_expired
+
+case "$1" in
+    list)
+        list_devices
+        ;;
+    enable)
+        if [ -z "$2" ] || [ -z "$3" ]; then
+            echo "Error: Missing bus and device IDs"
+            show_help
+            exit 1
+        fi
+        enable_device "$2" "$3" "${4:-$OVERRIDE_TIMEOUT}"
+        ;;
+    disable)
+        if [ -z "$2" ] || [ -z "$3" ]; then
+            echo "Error: Missing bus and device IDs"
+            show_help
+            exit 1
+        fi
+        disable_device "$2" "$3"
+        ;;
+    cleanup)
+        cleanup_expired
+        ;;
+    help|--help|-h)
+        show_help
+        ;;
+    *)
+        echo "Error: Unknown command '$1'"
+        show_help
+        exit 1
+        ;;
+esac
+EOF
+
+# Make the tool executable
+chmod 755 /usr/local/sbin/usb-override
+
+# Create root-only configuration directory
+chmod 700 /etc/usb-override
+
+# Add a systemd timer to clean up expired sessions
+cat > /etc/systemd/system/usb-override-cleanup.service << 'EOF'
+[Unit]
+Description=Clean up expired USB override sessions
+Documentation=file:/usr/local/sbin/usb-override
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/usb-override cleanup
+EOF
+
+cat > /etc/systemd/system/usb-override-cleanup.timer << 'EOF'
+[Unit]
+Description=Periodically clean up expired USB override sessions
+
+[Timer]
+OnBootSec=5min
+OnUnitActiveSec=5min
+
+[Install]
+WantedBy=timers.target
+EOF
+
+# Enable the cleanup timer
+systemctl enable usb-override-cleanup.timer
+
+# Document the USB override feature
+cat > /usr/share/doc/usb-override.md << 'EOF'
+# USB Override Tool Documentation
+
+The `usb-override` tool provides a secure mechanism for temporarily overriding USB device restrictions in the DevOps environment. It maintains security through session-based access control and comprehensive audit logging.
+
+## Features
+
+- Temporary device access with automatic expiration
+- Session-based tracking of overridden devices
+- Complete audit logging of all operations
+- Automatic cleanup of expired sessions
+- Root-only access control
+
+## Usage
+
+1. List available USB devices:
+   ```
+   sudo usb-override list
+   ```
+
+2. Enable a device for 1 hour (default):
+   ```
+   sudo usb-override enable <bus> <device>
+   ```
+
+3. Enable a device for a specific duration (in seconds):
+   ```
+   sudo usb-override enable <bus> <device> 7200
+   ```
+
+4. Disable a device before timeout:
+   ```
+   sudo usb-override disable <bus> <device>
+   ```
+
+## Security Considerations
+
+- All operations require root privileges
+- Session information is stored in volatile memory (/run)
+- All actions are logged to /var/log/usb-override/audit.log
+- Automatic cleanup ensures no orphaned sessions
+- Compatible with core system security measures
+
+## Audit Log Location
+
+Audit logs are stored in `/var/log/usb-override/audit.log`
+
+## Configuration
+
+The system maintains session information in:
+- `/run/usb-override/` (volatile session data)
+- `/etc/usb-override/` (persistent configuration)
+
+## Implementation Details
+
+The override mechanism works in conjunction with the core system's USB security measures by:
+1. Creating a session marker when a device is enabled
+2. Triggering a udev reload for the specific device
+3. Automatically expiring access after the specified duration
+4. Maintaining a detailed audit trail of all operations
+EOF
+
+# Clean up
+sync
+echo "USB override system installed successfully"

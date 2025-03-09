@@ -1,6 +1,7 @@
 ## Version Control
 git
 git-lfs
+git-delta
 
 ## Data Processing Tools
 jq
