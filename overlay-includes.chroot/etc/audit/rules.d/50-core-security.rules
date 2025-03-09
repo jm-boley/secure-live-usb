@@ -1,0 +1,33 @@
+# Core audit rules optimized for Live environment
+# Minimized for resource efficiency while maintaining essential security monitoring
+
+## Delete all existing rules
+-D
+
+## Reduced buffer size for limited memory environments
+-b 4096
+
+## Ensure events don't get lost (0=silent, 1=printk, 2=panic)
+-f 1
+
+## Critical authentication events only
+-w /etc/shadow -p wa -k identity_changes
+-w /etc/sudoers -p wa -k sudoers_changes
+-w /etc/sudoers.d/ -p wa -k sudoers_changes
+
+## High-priority command execution
+-a exit,always -F arch=b64 -S execve -F euid=0 -F key=privileged_exec
+-w /usr/bin/sudo -p x -k sudo_usage
+-w /usr/bin/su -p x -k su_usage
+
+## Essential kernel module monitoring
+-w /sbin/insmod -p x -k module_load
+-w /sbin/rmmod -p x -k module_unload
+-w /sbin/modprobe -p x -k module_load
+
+## Critical system changes
+-w /etc/systemd/system -p wa -k systemd_units
+-w /etc/ssh/sshd_config -p wa -k sshd_config
+
+# Make the configuration immutable but allowing for Live environment adjustments
+-e 1
