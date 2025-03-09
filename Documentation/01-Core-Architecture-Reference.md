@@ -101,6 +101,63 @@ The core system uses a layered configuration approach:
 - Logging and verification
 - State management
 
+### Package Selection and Management
+
+The system implements a robust package selection strategy that ensures consistent availability of critical components across different environments:
+
+**Package Priority Management**:
+- Priority Levels:
+    * Required: Core system functionality
+    * Important: System reliability
+    * Standard: Common tools and utilities
+    * Optional: Additional functionality
+- Implementation Strategy:
+    * Explicit inclusion of security-critical packages regardless of priority
+    * Versioning requirements for sensitive components
+    * Dependency resolution handling
+    * Conflict management between variants
+
+**Core Package Selection Implementation**:
+- Selection Criteria:
+    * Security relevance
+    * Operational necessity
+    * Dependency implications
+    * Resource impact
+- Package List Structure:
+    * Categorized by function (core-basic-security.list.chroot, etc.)
+    * Documented package purposes
+    * Inter-package relationships
+    * Version constraints
+
+**Critical Service Management**:
+- System Services:
+    * Scheduling services (cron, anacron)
+    * Security monitoring
+    * System maintenance
+- Implementation:
+    * Explicit package inclusion
+    * Service configuration management
+    * Dependency handling
+    * State preservation
+
+**Base System Integration**:
+- Integration Points:
+    * Package conflicts resolution
+    * Shared dependency management
+    * Version compatibility
+    * Configuration overlays
+- Quality Assurance:
+    * Package presence verification
+    * Version compatibility checks
+    * Configuration validation
+    * Service state verification
+
+This comprehensive approach ensures that:
+1. Critical security and system maintenance packages are consistently available
+2. Package relationships are properly managed
+3. System stability is maintained across variants
+4. Security requirements are met regardless of base system configuration
+
 ## Core Security Features
 
 The base system implements fundamental security measures:
@@ -186,20 +243,113 @@ Each configuration category is implemented through separate sysctl configuration
     * Flash storage security
     * Boot-time safety checks
 
+**Temporary Storage Security**:
+- Systemd Mount Unit Implementation:
+    * Hardened /tmp mount options:
+        - nodev: Prevent device file creation
+        - nosuid: Disable SUID/SGID binaries
+        - noexec: Prevent code execution
+    * Automatic enforcement through systemd
+    * Complements existing mount controls
+    * Runtime environment protection
+
+Security Benefits:
+- Prevents privilege escalation via SUID/SGID binaries in /tmp
+- Blocks creation of malicious device files
+- Stops direct execution of downloaded or temporary files
+- Reduces attack surface from /tmp-based exploits
+
+### Audit System Implementation
+The system implements a resource-conscious audit framework optimized for live environments:
+
+**Core Audit Configuration**:
+- **Buffer Management**:
+    * Optimized 4096-byte buffer size
+    * Incremental async flushing
+    * Lossy dispatch quality for memory preservation
+    * Increased flush frequency (100) for buffer efficiency
+
+**Log Management Strategy**:
+- Storage Optimization:
+    * 4MB maximum log file size
+    * Two-file rotation system
+    * Conservative space thresholds
+    * SYSLOG-based warnings
+- Resource Protection:
+    * Early warning at 50% capacity
+    * Administrative alerts at 25% remaining
+    * Non-disruptive error handling
+    * Disk-error fallback to syslog
+
+**Rule Structure Implementation**:
+- High-Priority Monitoring:
+    * Authentication events (/etc/shadow, sudoers)
+    * Privileged command execution (sudo, su)
+    * Kernel module operations
+    * Critical system changes
+- Resource Impact Considerations:
+    * Selective file monitoring
+    * Focused execution tracking
+    * Essential-only system call auditing
+    * Efficient rule organization
+
 **Security Benefits**:
 - Protection against:
-    * BadUSB attacks
-    * Auto-executed payloads
-    * Filesystem-based exploits
-    * Race conditions in device handling
-- Enhanced user control over mount operations
+    * Unauthorized privilege escalation
+    * Critical file modifications
+    * Kernel module tampering
+    * System configuration changes
+- Balanced with:
+    * Minimal memory footprint
+    * Reduced I/O impact
+    * Live environment compatibility
+    * Resource availability
+
+**Implementation Components**:
+- Configuration Distribution:
+    * Core rules in overlay-includes.chroot
+    * Separate daemon configuration
+    * Modular rule organization
+    * Built-in resource protections
+- Optimization Strategy:
+    * Memory-conscious buffer settings
+    * Efficient log rotation
+    * Minimal disk I/O
+    * Performance-focused dispatch
+
+This implementation ensures comprehensive security auditing while maintaining system usability in resource-constrained live environments, supporting both Security and DevOps use cases through carefully balanced configuration choices.
+
+### System-wide Cryptographic Policies
+
+The system enforces standardized cryptographic policies through the crypto-policies framework, which provides consistent cryptographic settings across all supported applications and services.
+
+#### Configuration
+
+- **Policy Level**: DEFAULT
+  - Provides a balanced security profile suitable for both Security and DevOps use cases
+  - Ensures FIPS-compatible algorithms while maintaining broad compatibility
+  - Applies to supported applications including OpenSSH, GnuTLS, OpenSSL, and other crypto backends
+
+#### Implementation
+
+The crypto policy is implemented through:
+- Configuration files in `/etc/crypto-policies/`
+- Required packages:
+  - crypto-policies: Core policy definitions and configurations
+  - crypto-policies-scripts: Support scripts for policy management
+
+#### Impact
+
+This system-wide policy ensures:
+- Consistent cryptographic security across all supported applications
+- Prevention of weak or deprecated cryptographic algorithms
+- Automated compliance with security best practices
 
 ### Update Management
 - Service access controls
 - Resource limitations
 - Audit logging
 
-### Update Management
 **Repository Configuration**:
 - Secure repository sources
 - Package verification
@@ -269,6 +419,15 @@ The system balances security with performance through careful tuning:
 - Optimized swap usage
 - Dirty page ratio tuning
 - Shared memory optimization
+- ZRAM Configuration:
+    * Adaptive sizing based on system memory:
+        - 25% ZRAM for systems with ≤8GB RAM
+        - 50% ZRAM for systems with >8GB RAM
+    * ZSTD compression for optimal performance
+    * Dynamic swappiness tuning:
+        - 80 for systems with ≤8GB RAM
+        - 100 for systems with >8GB RAM
+    * Implemented via hook script for consistent configuration across all variants
 
 **I/O Subsystem**:
 - Overlay filesystem optimizations

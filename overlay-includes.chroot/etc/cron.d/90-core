@@ -1,0 +1,9 @@
+# Core cron jobs for all spins
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Log system statistics hourly
+0 * * * * root /usr/lib/sysstat/sa1 1 1
+
+# Rotate and compress logs daily
+25 6 * * * root /usr/sbin/logrotate /etc/logrotate.conf

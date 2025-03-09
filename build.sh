@@ -1,6 +1,17 @@
 #!/bin/bash
 
-INSTALL_WARP=false                 # Default, no Warp terminal install
+# Arrays to hold optional installer functions and their corresponding flags
+declare -a OPTIONAL_INSTALLER_FUNCTIONS
+declare -a OPTIONAL_INSTALLER_FLAGS
+
+# Function to register optional installers
+register_optional_installer() {
+    local func_name="$1"
+    local flag_name="$2"
+    OPTIONAL_INSTALLER_FUNCTIONS+=("$func_name")
+    OPTIONAL_INSTALLER_FLAGS+=("$flag_name")
+}
+
 CONTAINER_MANAGER="podman"         # Default, use Podman unless overridden
 IMAGE_NAME="debian-live-builder"   # Default builder image name
 
@@ -73,46 +84,52 @@ check_required_struct() {
     fi
 }
 
-# Download Warp AppImage
-download_warp_appimage() {
-    local temp_dir=$(mktemp -d)
-    local warp_dir="$temp_dir/warp"
-    local target_dir="overlay-includes.chroot/var/lib/warp"
-    local appimage_path="$warp_dir/warp.AppImage"
-
-    # Create directory
-    mkdir -p "$warp_dir"
-
-    echo "Downloading latest Warp AppImage..."
-    # Download latest version from official Warp endpoint
-    if ! curl -L --progress-bar \
-        "https://app.warp.dev/download?package=appimage" \
-        -o "$appimage_path"; then
-        rm -rf "$temp_dir"
-        echo "Error: Failed to download Warp AppImage"
-        echo "Please check your internet connection and try again"
-        exit 1
+# Source optional installer scripts and run registered installers
+process_install_modifiers() {
+    local installer_dir="optional/install_mods"
+    if [[ ! -d "$installer_dir" ]]; then
+        echo "  - No optional installers directory found, skipping"
+        return 0
     fi
 
-    # Make AppImage executable
-    if ! chmod +x "$appimage_path"; then
-        rm -rf "$temp_dir"
-        echo "Error: Failed to make Warp AppImage executable"
-        exit 1
+    # Source all installer scripts
+    echo "  - Discovering optional installers"
+    for installer in "$installer_dir"/*.sh; do
+        if [[ -f "$installer" ]]; then
+            echo "    • Loading installer: $(basename "$installer")"
+            if ! source "$installer"; then
+                echo "    • Error: Failed to source installer $(basename "$installer")" >&2
+                return 1
+            fi
+        fi
+    done
+
+    # Execute registered installers if their flags are set
+    if ((${#OPTIONAL_INSTALLER_FUNCTIONS[@]} > 0)); then
+        echo "  - Processing optional installers"
+        local i
+        for ((i=0; i<${#OPTIONAL_INSTALLER_FUNCTIONS[@]}; i++)); do
+            local func="${OPTIONAL_INSTALLER_FUNCTIONS[$i]}"
+            local flag="${OPTIONAL_INSTALLER_FLAGS[$i]}"
+            
+            # Check if this installer's flag was provided
+            if [[ " $* " =~ " $flag " ]]; then
+                echo "    • Executing: $func (triggered by $flag)"
+                if ! "$func"; then
+                    echo "    • Error: Optional installer $func failed" >&2
+                    return 1
+                fi
+            else
+                echo "    • Skipping: $func ($flag not specified)"
+            fi
+        done
+        echo "    • All optional installers processed"
+    else
+        echo "  - No optional installers registered"
     fi
-
-    # Move to final location
-    mkdir -p "$target_dir"
-    mv "$appimage_path" "$target_dir/"
-    rm -rf "$temp_dir"
-
-    echo "Warp AppImage downloaded and configured successfully"
 }
 
 cleanup() {
-    if ! $INSTALL_WARP; then
-        rm -rf overlay-includes.chroot/var/lib/warp
-    fi
     if $CLEAN_BUILD; then
         rm -rf build/*
         touch build/.gitkeep
@@ -221,55 +238,63 @@ prepare_build_image() {
 }
 
 run_build_process() {
+    echo "Stage 1: Preparation"
     if $CLEAN_BUILD; then
-        echo "Cleaning previous build..."
-        "$CONTAINER_MANAGER" run --privileged \
+        echo "  - Cleaning build environment"
+        if ! "$CONTAINER_MANAGER" run --privileged \
             "${SECURITY_OPTS[@]}" \
             -v "build:/build$VOLUME_OPTS" \
-            "$IMAGE_NAME" 'sh -c "lb clean"'
+            "$IMAGE_NAME" 'sh -c "lb clean"'; then
+            echo "    • Error: Failed to clean build environment" >&2
+            return 1
+        fi
+        echo "    • Build environment cleaned successfully"
     else
-        echo "WARNING: Skipping clean step. This may lead to non-deterministic builds and should not be used for production."
+        echo "  - WARNING: Skipping clean step (not recommended for production)" >&2
     fi
 
-    # Run the config
+    echo -e "\nStage 2: Live Build Configuration"
+    echo "  - Configuring live-build parameters"
     if ! "$CONTAINER_MANAGER" run --privileged \
             "${SECURITY_OPTS[@]}" \
             -v "build:/build$VOLUME_OPTS" \
             "$IMAGE_NAME" "sh -c \"lb config noauto ${CONFIG_OPTS[@]}\""; then
-        echo "Error: lb config failed"
-        exit 1
+        echo "    • Error: Live build configuration failed" >&2
+        return 1
+    fi
+    echo "    • Live build configured successfully"
+
+    echo -e "\nStage 3: Optional Components"
+    if ! process_install_modifiers "$@"; then
+        echo "  - Error: Optional component installation failed" >&2
+        return 1
     fi
 
-    # Copy custom configurations
-    echo "Copying custom configurations..."
+    echo -e "\nStage 4: Overlay Configuration"
+    echo "  - Applying overlay configurations"
     if ! cp -rv overlay-config/* build/config/; then
-        echo "Error: Failed to copy custom configurations"
-        exit 1
+        echo "Error: Failed to copy overlay-config/ to build directory" >&2
+        return 1
     fi
-    echo "Custom configurations copied successfully"
+    echo "  - All configurations copied successfully"
 
-    # Run the build
+    echo -e "\nStage 5: Build Execution"
+    echo "  - Running live-build process"
     if ! "$CONTAINER_MANAGER" run --privileged \
             "${SECURITY_OPTS[@]}" \
             -v "build:/build$VOLUME_OPTS" \
             -v "overlay-includes.chroot:/build/config/includes.chroot$VOLUME_OPTS" \
             "$IMAGE_NAME" 'sh -c "lb build"'; then
-        echo "Error: Build failed"
-        exit 1
+        echo "    • Error: Build process failed" >&2
+        return 1
     fi
+    echo "    • Build completed successfully"
 }
 
 # Main script body
 check_required_struct
 process_args "$@"
 setup_container_manager
-
-if $INSTALL_WARP; then
-    download_warp_appimage
-else
-    # Clean up any existing Warp files if not installing
-    rm -rf overlay-includes.chroot/var/lib/warp  
-fi
 
 prepare_build_image
 run_build_process

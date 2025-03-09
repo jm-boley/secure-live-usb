@@ -1,0 +1,18 @@
+# Package dependencies for Warp terminal AppImage
+#
+# These packages are only included when building with --with-warp flag
+# to minimize the attack surface when Warp is not needed.
+
+# Essential AppImage Dependencies
+libfuse2  # Required by most AppImages, including Warp
+fuse      # Classic FUSE support (some AppImages still use it)
+
+# Runtime Support
+libnss3   # Network Security Services
+libnspr4  # Netscape Portable Runtime
+libasound2  # Audio support for terminal bells and notifications
+
+# For AppImage desktop integration
+desktop-file-utils  # For desktop file validation and cache updating
+shared-mime-info    # For file type recognition
+
