@@ -1,1 +1,3 @@
 README.md merge=ours
+overlay-includes.chroot/etc/nftables.conf merge=ours
+overlay-includes.chroot/etc/pam.d/common-auth merge=ours

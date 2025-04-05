@@ -1,0 +1,24 @@
+# Security spin specific cron jobs
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+# Clear sensitive data from memory periodically (every 2 hours)
+0 */2 * * * root /sbin/sysctl -w vm.drop_caches=3 > /dev/null 2>&1
+
+# Cleanup temporary forensics artifacts (hourly)
+15 * * * * root find /tmp -name "forensics-*" -type f -mmin +120 -delete
+
+# Monitor system resources and log if critical (every 15 minutes)
+*/15 * * * * root free -m | awk '/Mem:/ {if($4<1024)print "Low memory warning: "$4"MB free"}' >> /var/log/resources.log
+
+# Rotate forensics logs (daily)
+45 2 * * * root find /var/log/forensics -type f -name "*.log" -mtime +1 -exec gzip {} \;
+
+# Clear old resource logs (keep 3 days)
+0 3 * * * root find /var/log -name "resources.log*" -type f -mtime +3 -delete
+
+# Run ClamAV scan on common infection areas (every 4 hours)
+0 */4 * * * root nice -n 19 ionice -c2 -n7 clamscan --quiet -r /tmp /var/tmp /home --log=/var/log/forensics/clamscan.log
+
+# Limited rkhunter checks (twice daily)
+30 5,17 * * * root nice -n 19 ionice -c2 -n7 rkhunter --check --skip-keypress --quiet --rwo >> /var/log/forensics/rkhunter.log 2>&1

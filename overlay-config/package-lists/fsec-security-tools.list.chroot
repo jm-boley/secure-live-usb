@@ -1,13 +1,10 @@
 ## Access Control
 # Authentication and authorization
-acl                    # Access control list utilities
-auditd                 # System audit daemon
 libpam-cracklib       # PAM module for password strength testing
 sudo                   # Superuser access management
 
 ## File Integrity
 # File system security
-checksecurity         # Basic system security checks
 tripwire              # File integrity checker
 
 ## Malware Detection
@@ -24,7 +21,6 @@ john                 # Password cracker for security auditing
 
 ## Security Assessment
 # Security analysis and auditing
-aide                 # Advanced Intrusion Detection Environment
 debsecan            # Debian Security Analyzer
 fail2ban            # Ban hosts that cause authentication errors
 lynis               # Security auditing tool
