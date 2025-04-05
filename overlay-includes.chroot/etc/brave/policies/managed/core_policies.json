@@ -1,0 +1,6 @@
+{
+  "SafeBrowsingEnabled": true,
+  "PasswordManagerEnabled": true,  # Allow password management for DevOps tools
+  "AutoplayAllowed": true,        # Don't interfere with web-based tools
+  "IncognitoModeAvailability": 0  # Allow incognito for testing
+}

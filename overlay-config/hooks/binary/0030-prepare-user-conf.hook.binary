@@ -1,0 +1,14 @@
+#!/bin/sh
+set -e
+
+# Use exported variables (default to "liveuser" if unset)
+username="${LIVE_USERNAME:-liveuser}"
+
+# Create the config.conf.d directory and file
+mkdir -p config/includes.chroot/etc/live/config.conf.d/
+cat << EOF > config/includes.chroot/etc/live/config.conf.d/user.conf
+LIVE_USERNAME="$username"
+LIVE_USER_FULLNAME="Live User"
+LIVE_HOSTNAME="debian-live"
+LIVE_USER_DEFAULT_GROUPS="audio cdrom dip floppy video plugdev netdev bluetooth sudo"
+EOF

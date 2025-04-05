@@ -1,3 +1,184 @@
+# Core Desktop and Utilities Security Baseline
+
+## Overview
+
+This document details the security baseline for desktop components and utilities in the core system. Our approach prioritizes essential security measures while maintaining compatibility with DevOps workflows. More stringent security measures are available in the security spin for high-security environments.
+
+## Design Philosophy
+
+### Balance of Security and Usability
+
+The core system's desktop security follows these principles:
+- Implement reasonable defaults that don't impede common DevOps tasks
+- Focus on preventing accidental security issues rather than enforcing strict controls
+- Maintain user productivity while providing basic security guardrails
+- Reserve stricter security measures for the dedicated security spin
+
+### Target Use Cases
+
+The baseline configuration supports:
+- Regular development and testing workflows
+- Container and virtual machine management
+- Local and remote system administration
+- Cross-system file operations and networking tasks
+
+## Component Security Configurations
+
+### Display Manager (LightDM)
+
+#### Configuration Location
+`/etc/lightdm/lightdm.conf.d/10-core-security.conf`
+
+#### Implementation
+```ini
+allow-guest=false
+greeter-hide-users=false
+autologin-user=none
+```
+
+#### Rationale
+- Disables guest access to prevent unauthorized system use
+- Shows user list for easier account switching in DevOps environments
+- Disables autologin to ensure basic authentication security
+
+### Desktop Environment (LXQt)
+
+#### Configuration Location
+`~/.config/lxqt/session.conf` and `~/.config/lxqt/lxqt-powermanagement.conf`
+
+#### Implementation
+```ini
+# Session Configuration
+lock-screen-before-power-actions=true
+screenlock-timeout=1800
+
+# Power Management
+enableBatteryWatcher=true
+enableIdlenessWatcher=true
+idlenessAction=lockScreen
+idlenessTimeSecs=1800
+```
+
+#### Rationale
+- 30-minute screen lock provides basic security without frequent interruptions
+- Power action locks prevent unauthorized access during system state changes
+- Battery monitoring ensures system availability for mobile workstations
+
+### File Manager (PCManFM-Qt)
+
+#### Configuration Location
+`~/.config/pcmanfm-qt/default/settings.conf`
+
+#### Implementation
+```ini
+ConfirmDelete=true
+NoUsbTrash=false
+ShowHidden=true
+```
+
+#### Rationale
+- Delete confirmation prevents accidental file loss
+- Normal trash operations maintain familiar workflow
+- Hidden file visibility supports development tasks
+- USB trash enabled for consistent file operations across devices
+
+### Terminal (QTerminal)
+
+#### Configuration Location
+`~/.config/qterminal.org/qterminal.ini`
+
+#### Implementation
+```ini
+AskOnExit=false
+HistoryLimitedTo=1000
+```
+
+#### Rationale
+- Reasonable history size balances utility with memory usage
+- No exit confirmation supports rapid terminal usage
+- Default security relies on shell-level controls
+
+### Network Management
+
+#### Configuration Location
+`/etc/NetworkManager/conf.d/10-core-security.conf`
+
+#### Implementation
+```ini
+[device]
+wifi.mac-address-randomization=1
+connection.auth-retries=3
+```
+
+#### Rationale
+- Basic MAC randomization provides network privacy
+- Reasonable authentication retry limit prevents lockouts
+- Balanced for both wireless and wired connections
+
+### Web Browser (Brave)
+
+#### Configuration Location
+`/etc/brave/policies/managed/core_policies.json`
+
+#### Implementation
+```json
+{
+  "SafeBrowsingEnabled": true,
+  "PasswordManagerEnabled": true,
+  "AutoplayAllowed": true,
+  "IncognitoModeAvailability": 0
+}
+```
+
+#### Rationale
+- Enables safe browsing for basic web protection
+- Allows password management for development tools
+- Permits media autoplay for web-based applications
+- Enables incognito mode for testing and privacy
+
+## Impact Assessment
+
+### Security Benefits
+- Basic protection against common threats
+- Reasonable defaults for unattended systems
+- Prevention of accidental security issues
+- Foundation for additional security measures
+
+### Workflow Compatibility
+- Minimal interference with development tasks
+- Support for common DevOps tools and practices
+- Balanced timeout values for real-world usage
+- Flexible file and network operations
+
+### Performance Considerations
+- Minimal overhead from security measures
+- No significant impact on system resources
+- Efficient power management integration
+- Optimized for development workstations
+
+## Security Spin Considerations
+
+The core baseline deliberately omits certain security measures that are more appropriate for high-security environments. These stricter controls are implemented in the security spin and include:
+
+- Mandatory user list hiding in LightDM
+- Shorter screen lock timeouts (5 minutes)
+- Stricter file system controls
+- Enhanced terminal security
+- Mandatory network security policies
+- Restricted browser functionality
+
+For high-security environments, refer to the security spin documentation for enhanced protection measures.
+
+## Maintenance and Updates
+
+The desktop security baseline is maintained through:
+- Regular review of security settings
+- Updates based on new threat information
+- Compatibility testing with development tools
+- User feedback integration
+
+Configuration changes should be tested thoroughly to ensure they don't disrupt DevOps workflows while maintaining the intended security benefits.
+
 # Core Desktop and Utilities Reference
 
 This document provides a comprehensive overview of the core tools and capabilities included in the base Live USB environment. The implementation follows a lightweight-first approach while ensuring all necessary functionality for both DevOps and Security operations is available.

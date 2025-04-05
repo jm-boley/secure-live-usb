@@ -1,0 +1,21 @@
+#!/bin/sh
+set -e
+
+username="${LIVE_USERNAME:-liveuser}"
+password="${LIVE_PASSWD:-livepasswd}"
+
+echo "Creating live user '$username'..."
+
+# Create or update the user and set password
+if id "$username" >/dev/null 2>&1; then
+    echo "$username:$password" | chpasswd
+else
+    useradd -m -s /bin/bash "$username"
+    echo "$username:$password" | chpasswd
+    usermod -aG audio,cdrom,dip,floppy,video,plugdev,netdev,bluetooth,sudo "$username"
+fi
+
+# Optional: Disable root login for extra security
+passwd -l root
+
+echo "Live user '$username' configured successfully."

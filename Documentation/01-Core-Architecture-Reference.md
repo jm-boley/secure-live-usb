@@ -345,6 +345,55 @@ This system-wide policy ensures:
 - Prevention of weak or deprecated cryptographic algorithms
 - Automated compliance with security best practices
 
+#### DevOps Considerations
+
+The DEFAULT policy is specifically chosen to support DevOps workflows while maintaining security:
+
+**Primary Use Cases**:
+- CI/CD Pipeline Operations:
+  - Container building and deployment
+  - Automated testing environments
+  - Infrastructure provisioning
+- Development Workflows:
+  - Version control operations
+  - Package management
+  - Development environment setup
+- Cloud Integration:
+  - Cloud provider API compatibility
+  - Container registry operations
+  - Service mesh communication
+
+**Technical Benefits**:
+- Modern Protocol Support:
+  - TLS 1.2 and 1.3 for secure communications
+  - Strong SSH protocol versions for deployment
+  - Secure container runtime operations
+- Tool Compatibility:
+  - Standard Git operations (HTTPS/SSH)
+  - Popular CI platforms (Jenkins, GitHub Actions)
+  - Container tools (Docker, Podman)
+  - Cloud provider SDKs
+
+**Policy Justification**:
+- Balances Security and Usability:
+  - Stronger than LEGACY (prevents known vulnerabilities)
+  - More compatible than FUTURE (supports existing tools)
+  - Less restrictive than FIPS (enables standard workflows)
+- Supports Common DevOps Tools:
+  - Compatible with major cloud platforms
+  - Works with standard build systems
+  - Enables modern deployment practices
+
+**Policy Management**:
+- Easy Policy Adaptation:
+  - Documented upgrade path to FUTURE
+  - FIPS mode enablement for compliance
+  - Legacy support when required
+- Implementation Flexibility:
+  - Team-specific policy adjustments
+  - Project-based security levels
+  - Environment-specific configurations
+
 ### Update Management
 - Service access controls
 - Resource limitations

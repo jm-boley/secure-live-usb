@@ -137,6 +137,50 @@ cleanup() {
 }
 trap cleanup EXIT
 
+query_acctdets() {
+    local username
+    local password1
+    local password2
+
+    # Prompt for username
+    echo "Enter the username for the live system (default: liveuser):"
+    read username
+    username=${username:-liveuser}  # Default to "liveuser" if empty
+
+    # Prompt for password (repeat for confirmation)
+    while true; do
+        echo "Enter the password for '$username':"
+        stty -echo
+        read password1
+        stty echo
+        echo "Confirm password:"
+        stty -echo
+        read password2
+        stty echo
+        if [ "$password1" = "$password2" ]; then
+            password="$password1"
+            break
+        else
+            echo "Passwords do not match. Try again."
+        fi
+    done
+
+    # Ensure config.conf.d directory exists
+    mkdir -p overlay-includes.chroot/etc/live/config.conf.d/
+
+    # Write live-config settings
+    cat << 'EOF' > overlay-includes.chroot/etc/live/config.conf.d/user.conf
+LIVE_USERNAME="$username"
+LIVE_USER_FULLNAME="Live User"
+LIVE_HOSTNAME="debian-live"
+LIVE_USER_DEFAULT_GROUPS="audio cdrom dip floppy video plugdev netdev bluetooth sudo"
+EOF
+
+    # Export username and password for use in hook script
+    export LIVE_USER="$username"
+    export LIVE_PASSWD="$password1"
+}
+
 usage() {
     cat << 'EOF'
 Secure Live USB Builder
@@ -296,5 +340,6 @@ check_required_struct
 process_args "$@"
 setup_container_manager
 
+query_acctdets
 prepare_build_image
 run_build_process
